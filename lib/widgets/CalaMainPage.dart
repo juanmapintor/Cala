@@ -5,7 +5,7 @@ import 'package:cala/widgets/configs/CalaColors.dart';
 import 'package:cala/widgets/configs/CalaIcons.dart';
 
 class CalaMainPage extends StatelessWidget {
-  var mainPageContent = MainPageContent();
+  final mainPageContent = MainPageContent();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
