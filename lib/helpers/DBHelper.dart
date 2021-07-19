@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:cala/main.dart';
-
 class DBHelper {
   late StreamController<String> _controller;
   late Stream mainPageStream;
