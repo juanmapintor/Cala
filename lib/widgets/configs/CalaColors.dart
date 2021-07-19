@@ -6,7 +6,9 @@ class CalaColors {
   static const mainOrangeColor = Color(0xFFDF8543);
   static const secondaryOrangeColor = Color(0xFFFBC687);
 
+  static const textDarker = Color(0xFF000000);
   static const textDark = Color(0xFF000000);
+  static const textLighter = Color(0xFFFFFFFF);
   static const textLight = Color(0xFFFFFFFF);
 
   static const MaterialColor teal =

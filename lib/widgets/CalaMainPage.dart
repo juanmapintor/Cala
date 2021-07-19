@@ -1,3 +1,4 @@
+import 'package:cala/helpers/DBHelper.dart';
 import 'package:cala/widgets/contents/MainPageContent.dart';
 import 'package:flutter/material.dart';
 
@@ -5,7 +6,9 @@ import 'package:cala/widgets/configs/CalaColors.dart';
 import 'package:cala/widgets/configs/CalaIcons.dart';
 
 class CalaMainPage extends StatelessWidget {
-  var mainPageContent = MainPageContent();
+  final DBHelper dbHelper;
+  CalaMainPage(this.dbHelper);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -14,9 +17,11 @@ class CalaMainPage extends StatelessWidget {
         backgroundColor: CalaColors.mainTealColor,
       ),
       drawer: _CalaDrawer(),
-      body: mainPageContent,
+      body: MainPageContent(dbHelper),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => print('ADD BUTTON PRESSED'),
+        onPressed: () {
+          Navigator.pushNamed(context, '/agregarIngesta');
+        },
         child: CalaIcons.addIcon,
         backgroundColor: Colors.green,
       ),
@@ -43,17 +48,26 @@ class _CalaDrawer extends StatelessWidget {
           ListTile(
             leading: CalaIcons.catalogIcon,
             title: Text('Catalogo de Comidas'),
-            onTap: () => Navigator.pushNamed(context, '/catalogo'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, '/catalogo');
+            },
           ),
           ListTile(
             leading: CalaIcons.progressIcon,
             title: Text('Mi Progreso'),
-            onTap: () => Navigator.pushNamed(context, '/progreso'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, '/progreso');
+            },
           ),
           ListTile(
             leading: CalaIcons.objetivIcon,
             title: Text('Mis Objetivos'),
-            onTap: () => Navigator.pushNamed(context, '/objetivos'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, '/objetivos');
+            },
           ),
           ListTile(
             leading: CalaIcons.salirIcon,

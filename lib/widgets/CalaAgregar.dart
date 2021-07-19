@@ -3,18 +3,19 @@ import 'package:flutter/material.dart';
 
 import 'package:cala/widgets/configs/CalaColors.dart';
 
-class CalaHistorial extends StatelessWidget {
+class CalaAgregar extends StatelessWidget {
   final DBHelper dbHelper;
-  CalaHistorial(this.dbHelper);
+  final bool comida;
+  CalaAgregar(this.dbHelper, this.comida);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Historial'),
+        title: Text('Agregar' + (comida ? ' comida.' : ' ingesta.')),
         backgroundColor: CalaColors.mainTealColor,
       ),
       body: Center(
-        child: Text('Historial'),
+        child: Text('Agregar' + (comida ? ' comida.' : ' ingesta.')),
       ),
     );
   }

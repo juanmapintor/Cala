@@ -3,18 +3,18 @@ import 'package:flutter/material.dart';
 
 import 'package:cala/widgets/configs/CalaColors.dart';
 
-class CalaHistorial extends StatelessWidget {
+class CalaObjetivos extends StatelessWidget {
   final DBHelper dbHelper;
-  CalaHistorial(this.dbHelper);
+  CalaObjetivos(this.dbHelper);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Historial'),
+        title: Text('Objetivos'),
         backgroundColor: CalaColors.mainTealColor,
       ),
       body: Center(
-        child: Text('Historial'),
+        child: Text('Objetivos'),
       ),
     );
   }
