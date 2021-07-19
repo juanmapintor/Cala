@@ -6,9 +6,13 @@ import 'package:cala/widgets/configs/CalaColors.dart';
 import 'package:cala/widgets/configs/CalaIcons.dart';
 
 class CalaMainPage extends StatelessWidget {
+<<<<<<< HEAD
   final DBHelper dbHelper;
   CalaMainPage(this.dbHelper);
 
+=======
+  final mainPageContent = MainPageContent();
+>>>>>>> 1fdf4f53bb7f2c3ec5682f45cd18df67170f4475
   @override
   Widget build(BuildContext context) {
     return Scaffold(
