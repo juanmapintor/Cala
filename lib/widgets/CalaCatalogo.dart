@@ -14,7 +14,12 @@ class CalaCatalogo extends StatelessWidget {
         backgroundColor: CalaColors.mainTealColor,
       ),
       body: Center(
-        child: Text('Catalogo'),
+        child: ElevatedButton(
+          child: Text('Agregar'),
+          onPressed: () {
+            Navigator.pushNamed(context, '/agregarComida');
+          },
+        ),
       ),
     );
   }

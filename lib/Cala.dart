@@ -1,12 +1,13 @@
+import 'package:flutter/material.dart';
+
 import 'package:cala/helpers/DBHelper.dart';
+
+import 'package:cala/widgets/CalaMainPage.dart';
+import 'package:cala/widgets/CalaHistorial.dart';
 import 'package:cala/widgets/CalaAgregar.dart';
 import 'package:cala/widgets/CalaCatalogo.dart';
 import 'package:cala/widgets/CalaObjetivos.dart';
 import 'package:cala/widgets/CalaProgreso.dart';
-import 'package:flutter/material.dart';
-
-import 'package:cala/widgets/CalaMainPage.dart';
-import 'package:cala/widgets/CalaHistorial.dart';
 
 class Cala extends StatefulWidget {
   @override
