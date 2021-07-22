@@ -8,6 +8,7 @@ import 'package:cala/widgets/CalaAgregar.dart';
 import 'package:cala/widgets/CalaCatalogo.dart';
 import 'package:cala/widgets/CalaObjetivos.dart';
 import 'package:cala/widgets/CalaProgreso.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 class Cala extends StatefulWidget {
   @override
@@ -42,14 +43,23 @@ class _CalaState extends State<Cala> {
   }
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(title: 'Cala', routes: {
-      '/': (context) => mainPage,
-      '/historial': (context) => historialPage,
-      '/catalogo': (context) => catalogoPage,
-      '/progreso': (context) => progresoPage,
-      '/objetivos': (context) => objetivosPage,
-      '/agregarComida': (context) => agregarComida,
-      '/agregarIngesta': (context) => agregarIngesta
-    });
+    return MaterialApp(
+      title: 'Cala',
+      routes: {
+        '/': (context) => mainPage,
+        '/historial': (context) => historialPage,
+        '/catalogo': (context) => catalogoPage,
+        '/progreso': (context) => progresoPage,
+        '/objetivos': (context) => objetivosPage,
+        '/agregarComida': (context) => agregarComida,
+        '/agregarIngesta': (context) => agregarIngesta,
+      },
+      localizationsDelegates: [GlobalMaterialLocalizations.delegate],
+      supportedLocales: [
+        const Locale('en'),
+        const Locale('fr'),
+        const Locale('es'),
+      ],
+    );
   }
 }
