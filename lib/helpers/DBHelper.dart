@@ -153,4 +153,21 @@ class DBHelper {
         print('Eliminada ingesta id: $id');
         return true;
       });
+
+  Future<List<double>> getLatestObjetivosGral() {
+    var random = Random();
+    return Future.delayed(
+      Duration(seconds: 3),
+      () => [
+        random.nextDouble() * 150,
+        random.nextDouble() * 150,
+        random.nextDouble() * 100,
+        random.nextDouble() * 100,
+        random.nextDouble() * 100,
+        random.nextDouble() * 100,
+        random.nextDouble() * 100,
+        random.nextDouble() * 100,
+      ],
+    );
+  }
 }

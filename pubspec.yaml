@@ -35,6 +35,7 @@ dependencies:
   pie_chart: ^5.0.0
   intl: ^0.17.0
   carousel_slider: ^4.0.0
+  flutter_speed_dial: ^4.1.0
  
 
 

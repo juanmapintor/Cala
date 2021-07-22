@@ -108,7 +108,7 @@ class _MainPageContentState extends State<MainPageContent> {
                             children: [
                               Expanded(
                                 child: Container(
-                                  height: 150,
+                                  height: 200,
                                   margin: EdgeInsets.all(30),
                                   child: FAProgressBar(
                                     maxValue: _calMVal,
@@ -126,7 +126,7 @@ class _MainPageContentState extends State<MainPageContent> {
                               ),
                               Expanded(
                                 child: Container(
-                                  height: 150,
+                                  height: 200,
                                   margin: EdgeInsets.all(30),
                                   child: FAProgressBar(
                                     maxValue: _carbMVal,
@@ -144,7 +144,7 @@ class _MainPageContentState extends State<MainPageContent> {
                               ),
                               Expanded(
                                 child: Container(
-                                  height: 150,
+                                  height: 200,
                                   margin: EdgeInsets.all(30),
                                   child: FAProgressBar(
                                     maxValue: _protMVal,
@@ -162,7 +162,7 @@ class _MainPageContentState extends State<MainPageContent> {
                               ),
                               Expanded(
                                 child: Container(
-                                  height: 150,
+                                  height: 200,
                                   margin: EdgeInsets.all(30),
                                   child: FAProgressBar(
                                     maxValue: _grasMVal,
