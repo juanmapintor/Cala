@@ -2,6 +2,7 @@ import 'package:cala/helpers/DBHelper.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cala/widgets/configs/CalaColors.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 class CalaObjetivos extends StatefulWidget {
   final DBHelper _dbHelper;
@@ -210,5 +211,42 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
       default:
         return Container();
     }
+  }
+
+  Widget _getFAB() {
+    return SpeedDial(
+      animatedIcon: AnimatedIcons.menu_close,
+      animatedIconTheme: IconThemeData(size: 22),
+      visible: true,
+      curve: Curves.bounceIn,
+      children: [
+        // FAB 1
+        SpeedDialChild(
+          child: Icon(Icons.assignment_turned_in),
+          backgroundColor: CalaColors.teal,
+          onTap: () {/* do anything */},
+          label: 'Agregar objetivo diario',
+          labelStyle: TextStyle(
+            fontWeight: FontWeight.w500,
+            color: Colors.white,
+            fontSize: 16.0,
+          ),
+          labelBackgroundColor: CalaColors.teal,
+        ),
+        // FAB 2
+        SpeedDialChild(
+          child: Icon(Icons.assignment_turned_in),
+          backgroundColor: CalaColors.teal,
+          onTap: () {},
+          label: 'Agregar objetivo general',
+          labelStyle: TextStyle(
+            fontWeight: FontWeight.w500,
+            color: Colors.white,
+            fontSize: 16.0,
+          ),
+          labelBackgroundColor: CalaColors.teal,
+        )
+      ],
+    );
   }
 }
