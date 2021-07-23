@@ -64,6 +64,7 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
         backgroundColor: CalaColors.teal,
       ),
       body: mainList,
+      floatingActionButton: _getFAB(),
     );
   }
 
