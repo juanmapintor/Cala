@@ -9,4 +9,8 @@ class CalaIcons {
   static const salirIcon = Icon(Icons.exit_to_app);
 
   static const addIcon = Icon(Icons.add);
+  static const addIconWhite = Icon(
+    Icons.add,
+    color: Colors.white,
+  );
 }

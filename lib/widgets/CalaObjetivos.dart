@@ -1,4 +1,5 @@
 import 'package:cala/helpers/DBHelper.dart';
+import 'package:cala/widgets/configs/CalaIcons.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cala/widgets/configs/CalaColors.dart';
@@ -223,31 +224,87 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
       children: [
         // FAB 1
         SpeedDialChild(
-          child: Icon(Icons.assignment_turned_in),
-          backgroundColor: CalaColors.teal,
-          onTap: () {/* do anything */},
-          label: 'Agregar objetivo diario',
+          child: CalaIcons.addIconWhite,
+          backgroundColor: CalaColors.orange,
+          onTap: () {
+            showAddOBD();
+          },
+          label: 'Cambiar objetivo diario',
           labelStyle: TextStyle(
             fontWeight: FontWeight.w500,
             color: Colors.white,
             fontSize: 16.0,
           ),
-          labelBackgroundColor: CalaColors.teal,
+          labelBackgroundColor: CalaColors.orange,
         ),
         // FAB 2
         SpeedDialChild(
-          child: Icon(Icons.assignment_turned_in),
-          backgroundColor: CalaColors.teal,
+          child: CalaIcons.addIconWhite,
+          backgroundColor: CalaColors.orange,
           onTap: () {},
-          label: 'Agregar objetivo general',
+          label: 'Cambiar objetivo general',
           labelStyle: TextStyle(
             fontWeight: FontWeight.w500,
             color: Colors.white,
             fontSize: 16.0,
           ),
-          labelBackgroundColor: CalaColors.teal,
+          labelBackgroundColor: CalaColors.orange,
         )
       ],
+    );
+  }
+
+  void showAddOBD() {
+    var caloriasCtl = TextEditingController();
+    var formKey = GlobalKey<FormState>();
+    var form = new Form(
+      key: formKey,
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'Calorias',
+                  style: TextStyle(fontWeight: FontWeight.w300),
+                ),
+              ),
+              Expanded(
+                child: TextFormField(
+                  controller: caloriasCtl,
+                  textInputAction: TextInputAction.next,
+                  validator: (value) {
+                    return (value == null || value.isEmpty)
+                        ? 'Ingrese calorias'
+                        : null;
+                  },
+                ),
+              )
+            ],
+          ),
+        ],
+      ),
+    );
+    showDialog(
+      context: context,
+      builder: (_) => new AlertDialog(
+        title: new Text("Objetivo diario."),
+        content: form,
+        actions: <Widget>[
+          TextButton(
+            child: Text('OK'),
+            onPressed: () {
+              formKey.currentState!.validate();
+            },
+          ),
+          TextButton(
+            child: Text('Cancelar'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          )
+        ],
+      ),
     );
   }
 }
