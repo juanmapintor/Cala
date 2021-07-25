@@ -158,11 +158,6 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
           makeInfoRow('IMC: ', objetivosGral[1], CalaColors.orange),
           makeInfoRow(
               'Grasa corporal (%): ', objetivosGral[2], CalaColors.orange),
-          makeInfoRow('Brazos (cm): ', objetivosGral[3], CalaColors.orange),
-          makeInfoRow('Pecho (cm): ', objetivosGral[4], CalaColors.orange),
-          makeInfoRow('Cintura (cm): ', objetivosGral[5], CalaColors.orange),
-          makeInfoRow('Cadera (cm): ', objetivosGral[6], CalaColors.orange),
-          makeInfoRow('Muslos (cm): ', objetivosGral[7], CalaColors.orange),
         ]);
       case 2:
         return Padding(

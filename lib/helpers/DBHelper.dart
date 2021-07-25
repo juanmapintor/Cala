@@ -167,6 +167,17 @@ class DBHelper {
     });
   }
 
+  Future<bool> addPesaje(double peso, double gras) {
+    return Future.delayed(Duration(seconds: 3), () {
+      print('Pesaje agregado');
+      print('Fecha: ' + DateTime.now().toLocal().toString());
+      print('Peso: $peso');
+      print('Grasa: $gras');
+      _controller.add('updProg');
+      return true;
+    });
+  }
+
   Future<bool> deleteIngesta(String id) async =>
       Future.delayed(Duration(seconds: 3), () {
         print('Eliminada ingesta id: $id');
@@ -182,16 +193,57 @@ class DBHelper {
     var random = Random();
     return Future.delayed(
       Duration(seconds: 3),
-      () => [
-        random.nextDouble() * 150,
-        random.nextDouble() * 150,
-        random.nextDouble() * 100,
-        random.nextDouble() * 100,
-        random.nextDouble() * 100,
-        random.nextDouble() * 100,
-        random.nextDouble() * 100,
-        random.nextDouble() * 100,
-      ],
+      () => [80, random.nextDouble() * 150, random.nextDouble() * 100],
     );
+  }
+
+  Future<List<Tuple<double, DateTime>>> getPesos(int dias) {
+    return Future.delayed(Duration(seconds: 1), () {
+      List<Tuple<double, DateTime>> list = [
+        Tuple(114, DateTime(2021, 2, 9)),
+        Tuple(110, DateTime(2021, 2, 16)),
+        Tuple(108, DateTime(2021, 2, 27)),
+        Tuple(102, DateTime(2021, 3, 14)),
+        Tuple(100, DateTime(2021, 3, 19)),
+        Tuple(96, DateTime(2021, 3, 27)),
+        Tuple(96, DateTime(2021, 4, 6)),
+        Tuple(96, DateTime(2021, 4, 10)),
+        Tuple(96, DateTime(2021, 4, 16)),
+      ];
+
+      return list;
+    });
+  }
+
+  Future<List<Tuple<double, DateTime>>> getPorcentajesGrasa(int dias) {
+    return Future.delayed(Duration(seconds: 1), () {
+      var random = Random();
+      DateTime initial = DateTime.now();
+      List<Tuple<double, DateTime>> list = [
+        Tuple(random.nextDouble() * 100, initial)
+      ];
+      for (int i = 1; i < 6; i++) {
+        DateTime nDT = initial.add(Duration(days: i * 7));
+        list.add(Tuple(random.nextDouble() * 100, nDT));
+        initial = nDT;
+      }
+      return list;
+    });
+  }
+
+  Future<List<Tuple<double, DateTime>>> getIMCs(int dias) {
+    return Future.delayed(Duration(seconds: 1), () {
+      var random = Random();
+      DateTime initial = DateTime.now();
+      List<Tuple<double, DateTime>> list = [
+        Tuple(random.nextDouble() * 50, initial)
+      ];
+      for (int i = 1; i < 6; i++) {
+        DateTime nDT = initial.add(Duration(days: i * 7));
+        list.add(Tuple(random.nextDouble() * 50, nDT));
+        initial = nDT;
+      }
+      return list;
+    });
   }
 }

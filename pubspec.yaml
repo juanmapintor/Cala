@@ -36,6 +36,8 @@ dependencies:
   intl: ^0.17.0
   carousel_slider: ^4.0.0
   flutter_speed_dial: ^4.1.0
+  fl_chart: ^0.36.3
+  
  
 
 
