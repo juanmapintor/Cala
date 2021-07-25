@@ -23,6 +23,11 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
 
   _CalaObjetivosState(this._dbHelper) {
     update(true);
+    _dbHelper.broadcastStream.listen((msg) {
+      if (msg == 'updObj') {
+        update(false);
+      }
+    });
   }
   @override
   Widget build(BuildContext context) {
@@ -71,7 +76,9 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
 
   void update(bool constructor) {
     if (!constructor) {
-      _gottenDaily = _gottenGral = 0;
+      setState(() {
+        _gottenDaily = _gottenGral = 0;
+      });
     }
     _dbHelper.getObjetivosMVals().then((obj) {
       objetivosDaily = obj;
@@ -222,7 +229,6 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
       visible: true,
       curve: Curves.bounceIn,
       children: [
-        // FAB 1
         SpeedDialChild(
           child: CalaIcons.addIconWhite,
           backgroundColor: CalaColors.orange,
@@ -237,11 +243,12 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
           ),
           labelBackgroundColor: CalaColors.orange,
         ),
-        // FAB 2
         SpeedDialChild(
           child: CalaIcons.addIconWhite,
           backgroundColor: CalaColors.orange,
-          onTap: () {},
+          onTap: () {
+            showAddOBG();
+          },
           label: 'Cambiar objetivo general',
           labelStyle: TextStyle(
             fontWeight: FontWeight.w500,
@@ -255,11 +262,15 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
   }
 
   void showAddOBD() {
-    var caloriasCtl = TextEditingController();
+    var calCtl = TextEditingController();
+    var carbCtl = TextEditingController();
+    var protCtl = TextEditingController();
+    var grasCtl = TextEditingController();
     var formKey = GlobalKey<FormState>();
     var form = new Form(
       key: formKey,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Row(
             children: [
@@ -271,7 +282,8 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
               ),
               Expanded(
                 child: TextFormField(
-                  controller: caloriasCtl,
+                  controller: calCtl,
+                  keyboardType: TextInputType.number,
                   textInputAction: TextInputAction.next,
                   validator: (value) {
                     return (value == null || value.isEmpty)
@@ -279,7 +291,95 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
                         : null;
                   },
                 ),
-              )
+              ),
+              Text(
+                'kcal',
+                style: TextStyle(fontWeight: FontWeight.w300),
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'Carbohidratos',
+                  style: TextStyle(fontWeight: FontWeight.w300),
+                ),
+              ),
+              Expanded(
+                child: TextFormField(
+                  controller: carbCtl,
+                  keyboardType: TextInputType.number,
+                  textInputAction: TextInputAction.next,
+                  validator: (value) {
+                    return (value == null ||
+                            value.isEmpty ||
+                            double.parse(value) > 100)
+                        ? 'Ingrese porcentaje de carbohidratos'
+                        : null;
+                  },
+                ),
+              ),
+              Text(
+                '%',
+                style: TextStyle(fontWeight: FontWeight.w300),
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'Proteinas',
+                  style: TextStyle(fontWeight: FontWeight.w300),
+                ),
+              ),
+              Expanded(
+                child: TextFormField(
+                  controller: protCtl,
+                  keyboardType: TextInputType.number,
+                  textInputAction: TextInputAction.next,
+                  validator: (value) {
+                    return (value == null ||
+                            value.isEmpty ||
+                            double.parse(value) > 100)
+                        ? 'Ingrese porcentaje de proteinas'
+                        : null;
+                  },
+                ),
+              ),
+              Text(
+                '%',
+                style: TextStyle(fontWeight: FontWeight.w300),
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'Grasas',
+                  style: TextStyle(fontWeight: FontWeight.w300),
+                ),
+              ),
+              Expanded(
+                child: TextFormField(
+                  controller: grasCtl,
+                  keyboardType: TextInputType.number,
+                  textInputAction: TextInputAction.next,
+                  validator: (value) {
+                    return (value == null ||
+                            value.isEmpty ||
+                            double.parse(value) > 100)
+                        ? 'Ingrese porcentaje de grasas'
+                        : null;
+                  },
+                ),
+              ),
+              Text(
+                '%',
+                style: TextStyle(fontWeight: FontWeight.w300),
+              ),
             ],
           ),
         ],
@@ -293,10 +393,217 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
         actions: <Widget>[
           TextButton(
             child: Text('OK'),
-            onPressed: () {
-              formKey.currentState!.validate();
+            onPressed: () async {
+              if (formKey.currentState!.validate()) {
+                var carbper = double.parse(carbCtl.text);
+                var protper = double.parse(protCtl.text);
+                var grasper = double.parse(grasCtl.text);
+                var tot = carbper + protper + grasper;
+
+                if (tot < 100 || tot > 101) {
+                  showInfoDiag('Los porcentajes no igualan el 100%');
+                } else {
+                  var cal = double.parse(calCtl.text);
+                  var carb = (cal * (carbper / 100)) / 4;
+                  var prot = (cal * (protper / 100)) / 4;
+                  var gras = (cal * (grasper / 100)) / 9;
+                  showWaiting('Agregando...');
+                  var success =
+                      await _dbHelper.addObjetivoDiario(cal, carb, prot, gras);
+
+                  if (success) {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
+                    showInfoDiag('Agregado correctamente!');
+                  } else {
+                    Navigator.of(context).pop();
+                    showInfoDiag('No se pudo agregar.');
+                  }
+                }
+              }
             },
           ),
+          TextButton(
+            child: Text('Cancelar'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          )
+        ],
+      ),
+    );
+  }
+
+  void showAddOBG() {
+    var pesoCtl = TextEditingController();
+    var altCtl = TextEditingController();
+    var grasCtl = TextEditingController();
+    var formKey = GlobalKey<FormState>();
+    var form = new Form(
+      key: formKey,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'Peso',
+                  style: TextStyle(fontWeight: FontWeight.w300),
+                ),
+              ),
+              Expanded(
+                child: TextFormField(
+                  controller: pesoCtl,
+                  keyboardType: TextInputType.number,
+                  textInputAction: TextInputAction.next,
+                  validator: (value) {
+                    return (value == null || value.isEmpty)
+                        ? 'Ingrese un peso'
+                        : null;
+                  },
+                ),
+              ),
+              Text(
+                'kg.',
+                style: TextStyle(fontWeight: FontWeight.w300),
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'Altura',
+                  style: TextStyle(fontWeight: FontWeight.w300),
+                ),
+              ),
+              Expanded(
+                child: TextFormField(
+                  controller: altCtl,
+                  keyboardType: TextInputType.number,
+                  textInputAction: TextInputAction.next,
+                  validator: (value) {
+                    return (value == null || value.isEmpty)
+                        ? 'Ingrese una altura'
+                        : null;
+                  },
+                ),
+              ),
+              Text(
+                'cm',
+                style: TextStyle(fontWeight: FontWeight.w300),
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'Grasas',
+                  style: TextStyle(fontWeight: FontWeight.w300),
+                ),
+              ),
+              Expanded(
+                child: TextFormField(
+                  controller: grasCtl,
+                  keyboardType: TextInputType.number,
+                  textInputAction: TextInputAction.next,
+                  validator: (value) {
+                    return (value == null ||
+                            value.isEmpty ||
+                            double.parse(value) > 100)
+                        ? 'Ingrese porcentaje de grasas'
+                        : null;
+                  },
+                ),
+              ),
+              Text(
+                '%',
+                style: TextStyle(fontWeight: FontWeight.w300),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+    showDialog(
+      context: context,
+      builder: (_) => new AlertDialog(
+        title: new Text("Objetivo general."),
+        content: form,
+        actions: <Widget>[
+          TextButton(
+            child: Text('OK'),
+            onPressed: () async {
+              if (formKey.currentState!.validate()) {
+                var peso = double.parse(pesoCtl.text);
+                var alt = double.parse(altCtl.text);
+                var gras = double.parse(grasCtl.text);
+                showWaiting('Agregando...');
+                var success = await _dbHelper.addObjetivoGral(peso, alt, gras);
+                if (success) {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                  showInfoDiag('Agregado correctamente!');
+                } else {
+                  Navigator.of(context).pop();
+                  showInfoDiag('No se pudo agregar.');
+                }
+              }
+            },
+          ),
+          TextButton(
+            child: Text('Cancelar'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          )
+        ],
+      ),
+    );
+  }
+
+  void showInfoDiag(String msg) {
+    showDialog(
+      context: context,
+      builder: (_) => new AlertDialog(
+        title: new Text('Info'),
+        content: Text(msg),
+        actions: <Widget>[
+          TextButton(
+            child: Text('OK'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          )
+        ],
+      ),
+    );
+  }
+
+  void showWaiting(String msg) {
+    showDialog(
+      context: context,
+      builder: (_) => new AlertDialog(
+        title: new Text('Espere...'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Align(
+              child: new Container(
+                width: 70.0,
+                height: 70.0,
+                child: new Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: new Center(child: new CircularProgressIndicator())),
+              ),
+              alignment: FractionalOffset.center,
+            ),
+            Text(msg),
+          ],
+        ),
+        actions: <Widget>[
           TextButton(
             child: Text('Cancelar'),
             onPressed: () {

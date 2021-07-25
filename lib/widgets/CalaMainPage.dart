@@ -68,12 +68,7 @@ class _CalaDrawer extends StatelessWidget {
               Navigator.pop(context);
               Navigator.pushNamed(context, '/objetivos');
             },
-          ),
-          ListTile(
-            leading: CalaIcons.salirIcon,
-            title: Text('Salir'),
-            onTap: () => print('Salir'),
-          ),
+          )
         ],
       ),
     );
@@ -84,14 +79,24 @@ class _CalaDrawerHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DrawerHeader(
-      decoration: CalaColors.gradientBoxDecoration,
-      child: Text(
-        'Drawer Header',
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 24,
-        ),
-      ),
-    );
+        decoration: CalaColors.gradientBoxDecoration,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.account_circle,
+              size: 100,
+              color: Colors.white,
+            ),
+            Text(
+              'Usuario Local',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+                fontWeight: FontWeight.w200,
+              ),
+            ),
+          ],
+        ));
   }
 }

@@ -143,6 +143,30 @@ class DBHelper {
     });
   }
 
+  Future<bool> addObjetivoDiario(
+      double cal, double carb, double prot, double gras) {
+    return Future.delayed(Duration(seconds: 3), () {
+      print('Objetivo diario agregado');
+      print('Calorias: $cal');
+      print('Carbohidratos: $carb');
+      print('Proteinas: $prot');
+      print('Grasa: $gras');
+      _controller.add('updObj');
+      return true;
+    });
+  }
+
+  Future<bool> addObjetivoGral(double peso, double alt, double gras) {
+    return Future.delayed(Duration(seconds: 3), () {
+      print('Objetivo general agregado');
+      print('Peso: $peso');
+      print('Altura: $alt');
+      print('Grasa: $gras');
+      _controller.add('updObj');
+      return true;
+    });
+  }
+
   Future<bool> deleteIngesta(String id) async =>
       Future.delayed(Duration(seconds: 3), () {
         print('Eliminada ingesta id: $id');
