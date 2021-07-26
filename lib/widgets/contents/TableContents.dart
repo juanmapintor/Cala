@@ -1,3 +1,4 @@
+import 'package:cala/widgets/configs/CalaColors.dart';
 import 'package:flutter/material.dart';
 
 class TableContents {
@@ -17,12 +18,12 @@ class TableContents {
                       cellText,
                       style: isHeader
                           ? TextStyle(
-                              color: Colors.white,
+                              color: CalaColors.white,
                               fontWeight: FontWeight.bold,
                               fontSize: 15,
                             )
                           : TextStyle(
-                              color: Colors.black,
+                              color: CalaColors.black,
                               fontWeight: FontWeight.w300,
                               fontSize: 15,
                             ),
@@ -49,7 +50,7 @@ class TableContents {
                 child: Text(
                   header,
                   style: TextStyle(
-                    color: Colors.white,
+                    color: CalaColors.white,
                     fontWeight: FontWeight.bold,
                     fontSize: 15,
                   ),
@@ -68,7 +69,7 @@ class TableContents {
                 child: Text(
                   data.toStringAsFixed(2),
                   style: TextStyle(
-                    color: Colors.black,
+                    color: CalaColors.black,
                     fontWeight: FontWeight.w300,
                     fontSize: 15,
                   ),

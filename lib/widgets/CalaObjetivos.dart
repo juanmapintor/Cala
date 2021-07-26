@@ -80,13 +80,13 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
         _gottenDaily = _gottenGral = 0;
       });
     }
-    _dbHelper.getObjetivosMVals().then((obj) {
+    _dbHelper.getObjetivoDiario().then((obj) {
       objetivosDaily = obj;
       setState(() {
         _gottenDaily = obj[0] != 0 ? 1 : 2;
       });
     });
-    _dbHelper.getLatestObjetivosGral().then((obj) {
+    _dbHelper.getObjetivoGral().then((obj) {
       objetivosGral = obj;
       setState(() {
         _gottenGral = obj[0] != 0 ? 1 : 2;
@@ -107,7 +107,7 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
                 child: Text(
                   header,
                   style: TextStyle(
-                    color: Colors.white,
+                    color: CalaColors.white,
                     fontWeight: FontWeight.bold,
                     fontSize: 17,
                   ),
@@ -126,7 +126,7 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
                 child: Text(
                   data.toStringAsFixed(2),
                   style: TextStyle(
-                    color: Colors.black,
+                    color: CalaColors.black,
                     fontWeight: FontWeight.w300,
                     fontSize: 17,
                   ),
@@ -166,7 +166,7 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
             child: Text(
               'Nada que mostrar...',
               style: TextStyle(
-                color: Colors.grey[500],
+                color: CalaColors.grey[500],
                 fontSize: 17,
                 fontWeight: FontWeight.w300,
               ),
@@ -205,7 +205,7 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
             child: Text(
               'Nada que mostrar...',
               style: TextStyle(
-                color: Colors.grey[500],
+                color: CalaColors.grey[500],
                 fontSize: 17,
                 fontWeight: FontWeight.w300,
               ),
@@ -233,7 +233,7 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
           label: 'Cambiar objetivo diario',
           labelStyle: TextStyle(
             fontWeight: FontWeight.w500,
-            color: Colors.white,
+            color: CalaColors.white,
             fontSize: 16.0,
           ),
           labelBackgroundColor: CalaColors.orange,
@@ -247,7 +247,7 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
           label: 'Cambiar objetivo general',
           labelStyle: TextStyle(
             fontWeight: FontWeight.w500,
-            color: Colors.white,
+            color: CalaColors.white,
             fontSize: 16.0,
           ),
           labelBackgroundColor: CalaColors.orange,

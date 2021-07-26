@@ -55,7 +55,7 @@ class _CalaCatalogoState extends State<CalaCatalogo> {
                   child: Text(
                     'Nada que mostrar...',
                     style: TextStyle(
-                      color: Colors.grey[500],
+                      color: CalaColors.grey[500],
                       fontSize: 17,
                       fontWeight: FontWeight.w300,
                     ),
@@ -76,7 +76,7 @@ class _CalaCatalogoState extends State<CalaCatalogo> {
           Navigator.pushNamed(context, '/agregarComida');
         },
         child: CalaIcons.addIcon,
-        backgroundColor: Colors.green,
+        backgroundColor: CalaColors.green,
       ),
     );
   }
@@ -104,7 +104,7 @@ class _CalaCatalogoState extends State<CalaCatalogo> {
       child: Column(
         children: [
           TableContents.makeTableRow(
-              true, ['Nombre', 'Cantidad'], Colors.orange),
+              true, ['Nombre', 'Cantidad'], CalaColors.orange),
           TableContents.makeTableRow(
               false,
               [comida.nombre, comida.cant.toStringAsFixed(2)],
@@ -127,11 +127,11 @@ class _CalaCatalogoState extends State<CalaCatalogo> {
                 await _dbHelper.deleteComida(comida.id);
                 update(false);
               },
-              child: Icon(Icons.delete, color: Colors.white),
+              child: Icon(Icons.delete, color: CalaColors.white),
               style: ElevatedButton.styleFrom(
                 shape: CircleBorder(),
                 padding: EdgeInsets.all(20),
-                primary: Colors.red,
+                primary: CalaColors.red,
               ),
             ),
           ),

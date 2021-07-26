@@ -33,7 +33,7 @@ class _CalaHistorialState extends State<CalaHistorial> {
   Widget build(BuildContext context) {
     Widget loadingIndicator = _load
         ? new Container(
-            color: Colors.grey[200],
+            color: CalaColors.grey[200],
             width: 70.0,
             height: 70.0,
             child: new Padding(
@@ -59,7 +59,7 @@ class _CalaHistorialState extends State<CalaHistorial> {
                   child: Text(
                     'Nada que mostrar...',
                     style: TextStyle(
-                      color: Colors.grey[500],
+                      color: CalaColors.grey[500],
                       fontSize: 17,
                       fontWeight: FontWeight.w300,
                     ),
@@ -74,7 +74,7 @@ class _CalaHistorialState extends State<CalaHistorial> {
         title: Text('Historial'),
         backgroundColor: CalaColors.mainTealColor,
       ),
-      backgroundColor: Colors.grey[200],
+      backgroundColor: CalaColors.grey[200],
       body: Column(
         children: [
           Expanded(child: lista),
@@ -89,7 +89,7 @@ class _CalaHistorialState extends State<CalaHistorial> {
                       style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w400,
-                          color: Colors.white),
+                          color: CalaColors.white),
                     ),
                   ),
                   _gotten
@@ -111,7 +111,7 @@ class _CalaHistorialState extends State<CalaHistorial> {
                             child: Text(
                               'Nada que mostrar...',
                               style: TextStyle(
-                                color: Colors.grey[300],
+                                color: CalaColors.grey[300],
                                 fontSize: 17,
                                 fontWeight: FontWeight.w300,
                               ),
@@ -127,7 +127,7 @@ class _CalaHistorialState extends State<CalaHistorial> {
           await getIngestas(context);
         },
         child: CalaIcons.histIcon,
-        backgroundColor: Colors.blueGrey,
+        backgroundColor: CalaColors.blueGrey,
       ),
     );
   }
@@ -138,7 +138,7 @@ class _CalaHistorialState extends State<CalaHistorial> {
       child: Column(
         children: [
           TableContents.makeTableRow(
-              true, ['Horario', 'Nombre', 'Cantidad'], Colors.orange),
+              true, ['Horario', 'Nombre', 'Cantidad'], CalaColors.orange),
           TableContents.makeTableRow(
               false,
               [
@@ -166,11 +166,11 @@ class _CalaHistorialState extends State<CalaHistorial> {
                 await _dbHelper.deleteIngesta(ingesta.id);
                 await update();
               },
-              child: Icon(Icons.delete, color: Colors.white),
+              child: Icon(Icons.delete, color: CalaColors.white),
               style: ElevatedButton.styleFrom(
                 shape: CircleBorder(),
                 padding: EdgeInsets.all(20),
-                primary: Colors.red,
+                primary: CalaColors.red,
               ),
             ),
           ),

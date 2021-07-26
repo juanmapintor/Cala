@@ -23,7 +23,7 @@ class CalaMainPage extends StatelessWidget {
           Navigator.pushNamed(context, '/agregarIngesta');
         },
         child: CalaIcons.addIcon,
-        backgroundColor: Colors.green,
+        backgroundColor: CalaColors.green,
       ),
     );
   }
@@ -86,12 +86,12 @@ class _CalaDrawerHeader extends StatelessWidget {
             Icon(
               Icons.account_circle,
               size: 100,
-              color: Colors.white,
+              color: CalaColors.white,
             ),
             Text(
               'Usuario Local',
               style: TextStyle(
-                color: Colors.white,
+                color: CalaColors.white,
                 fontSize: 24,
                 fontWeight: FontWeight.w200,
               ),

@@ -19,11 +19,6 @@ class CalaProgreso extends StatefulWidget {
 }
 
 class _CalaProgresoState extends State<CalaProgreso> {
-  final List<Color> gradientColors = [
-    const Color(0xff23b6e6),
-    const Color(0xff02d39a),
-  ];
-
   final DBHelper _dbHelper;
   var _load = true;
 
@@ -61,49 +56,100 @@ class _CalaProgresoState extends State<CalaProgreso> {
           ? loading
           : ListView(
               children: [
-                Padding(
-                  padding: EdgeInsets.all(10),
-                  child: Text(
-                    'Peso',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300),
+                Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Text(
+                      'Peso',
+                      style:
+                          TextStyle(fontSize: 23, fontWeight: FontWeight.w500),
+                    ),
                   ),
                 ),
-                getGraph(_dataPeso,
-                    minX: 0,
-                    maxX: daysBetween(_dataPeso.first.s, _dataPeso.last.s)
-                        .toDouble(),
-                    minY: _objetivos[0] - 5,
-                    maxY: getMax(_dataPeso) + 5),
-                Padding(
-                  padding: EdgeInsets.all(10),
-                  child: Text(
-                    '% Grasa',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300),
+                _dataPeso.isEmpty
+                    ? Container(
+                        height: 350,
+                        child: Center(
+                          child: Text(
+                            'Comience agregando un pesaje',
+                            style: TextStyle(
+                              color: CalaColors.grey[500],
+                              fontSize: 17,
+                              fontWeight: FontWeight.w300,
+                            ),
+                          ),
+                        ),
+                      )
+                    : getGraph(_dataPeso,
+                        minX: 0,
+                        maxX: daysBetween(_dataPeso.first.s, _dataPeso.last.s)
+                            .toDouble(),
+                        minY: _objetivos[0] - 5,
+                        maxY: getMax(_dataPeso) + 5),
+                Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Text(
+                      '% Grasa',
+                      style:
+                          TextStyle(fontSize: 23, fontWeight: FontWeight.w500),
+                    ),
                   ),
                 ),
-                getGraph(
-                  _dataGrasa,
-                  minX: 0,
-                  maxX: daysBetween(_dataGrasa.first.s, _dataGrasa.last.s)
-                      .toDouble(),
-                  minY: 0,
-                  maxY: 100,
-                ),
-                Padding(
-                  padding: EdgeInsets.all(10),
-                  child: Text(
-                    'IMC',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300),
+                _dataGrasa.isEmpty
+                    ? Container(
+                        height: 350,
+                        child: Center(
+                          child: Text(
+                            'Comience agregando un pesaje',
+                            style: TextStyle(
+                              color: CalaColors.grey[500],
+                              fontSize: 17,
+                              fontWeight: FontWeight.w300,
+                            ),
+                          ),
+                        ),
+                      )
+                    : getGraph(
+                        _dataGrasa,
+                        minX: 0,
+                        maxX: daysBetween(_dataGrasa.first.s, _dataGrasa.last.s)
+                            .toDouble(),
+                        minY: 0,
+                        maxY: 100,
+                      ),
+                Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Text(
+                      'IMC',
+                      style:
+                          TextStyle(fontSize: 23, fontWeight: FontWeight.w500),
+                    ),
                   ),
                 ),
-                getGraph(
-                  _dataIMC,
-                  minX: 0,
-                  maxX: daysBetween(_dataGrasa.first.s, _dataGrasa.last.s)
-                      .toDouble(),
-                  minY: 20,
-                  maxY: 100,
-                ),
+                _dataIMC.isEmpty
+                    ? Container(
+                        height: 350,
+                        child: Center(
+                          child: Text(
+                            'Comience agregando un pesaje',
+                            style: TextStyle(
+                              color: CalaColors.grey[500],
+                              fontSize: 17,
+                              fontWeight: FontWeight.w300,
+                            ),
+                          ),
+                        ),
+                      )
+                    : getGraph(
+                        _dataIMC,
+                        minX: 0,
+                        maxX: daysBetween(_dataIMC.first.s, _dataIMC.last.s)
+                            .toDouble(),
+                        minY: 10,
+                        maxY: 50,
+                      ),
               ],
             ),
       floatingActionButton: FloatingActionButton(
@@ -111,7 +157,7 @@ class _CalaProgresoState extends State<CalaProgreso> {
           showAddOBG();
         },
         child: CalaIcons.addIcon,
-        backgroundColor: Colors.green,
+        backgroundColor: CalaColors.green,
       ),
     );
   }
@@ -127,7 +173,7 @@ class _CalaProgresoState extends State<CalaProgreso> {
     _dataGrasa = await _dbHelper.getPorcentajesGrasa(30);
     _dataIMC = await _dbHelper.getIMCs(30);
 
-    _objetivos = await _dbHelper.getLatestObjetivosGral();
+    _objetivos = await _dbHelper.getObjetivoGral();
 
     setState(() {
       _load = false;
@@ -295,8 +341,7 @@ class _CalaProgresoState extends State<CalaProgreso> {
     List<FlSpot> listSpot = [];
     for (var data in list) {
       var days = daysBetween(initial, data.s).toDouble();
-      var datar = data.r;
-      print('spot: ($days, $datar)');
+      var datar = double.parse(data.r.toStringAsFixed(2));
       listSpot.add(FlSpot(days, datar));
     }
     return listSpot;
@@ -366,7 +411,7 @@ class _CalaProgresoState extends State<CalaProgreso> {
               getDrawingHorizontalLine: (value) {
                 return (value % 5) == 0
                     ? FlLine(
-                        color: Colors.grey[400],
+                        color: CalaColors.grey[400],
                         strokeWidth: 1,
                       )
                     : FlLine(
@@ -380,7 +425,7 @@ class _CalaProgresoState extends State<CalaProgreso> {
                   var days = daysBetween(initial, data.s).toDouble();
                   if (value == days)
                     return FlLine(
-                      color: Colors.grey[400],
+                      color: CalaColors.grey[400],
                       strokeWidth: 1,
                     );
                 }
@@ -397,11 +442,11 @@ class _CalaProgresoState extends State<CalaProgreso> {
               LineChartBarData(
                 spots: getSpots(_data),
                 isCurved: true,
-                colors: gradientColors,
+                colors: CalaColors.orangeGradientColors,
                 barWidth: 5,
                 belowBarData: BarAreaData(
                   show: true,
-                  colors: gradientColors
+                  colors: CalaColors.orangeGradientColors
                       .map((color) => color.withOpacity(0.3))
                       .toList(),
                 ),

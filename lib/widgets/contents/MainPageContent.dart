@@ -53,7 +53,11 @@ class _MainPageContentState extends State<MainPageContent> {
       'Proteinas': _protCVal.toDouble(),
       'Grasas': _grasCVal.toDouble()
     });
-    List<Color> _colors = [Colors.blue, Colors.orange, Colors.green];
+    List<Color> _colors = [
+      CalaColors.blue,
+      CalaColors.orange,
+      CalaColors.green
+    ];
     Widget loadingIndicator = _load
         ? new Container(
             width: 70.0,
@@ -73,7 +77,7 @@ class _MainPageContentState extends State<MainPageContent> {
                   Text(
                     'Comience agregando un objetivo en la pestaña objetivos',
                     style: TextStyle(
-                      color: Colors.grey[500],
+                      color: CalaColors.grey[500],
                       fontSize: 17,
                       fontWeight: FontWeight.w300,
                     ),
@@ -118,9 +122,9 @@ class _MainPageContentState extends State<MainPageContent> {
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(30)),
                                     border: Border.all(
-                                        color: Colors.red,
+                                        color: CalaColors.red,
                                         style: BorderStyle.solid),
-                                    progressColor: Colors.red,
+                                    progressColor: CalaColors.red,
                                   ),
                                 ),
                               ),
@@ -136,9 +140,9 @@ class _MainPageContentState extends State<MainPageContent> {
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(30)),
                                     border: Border.all(
-                                        color: Colors.blue,
+                                        color: CalaColors.blue,
                                         style: BorderStyle.solid),
-                                    progressColor: Colors.blue,
+                                    progressColor: CalaColors.blue,
                                   ),
                                 ),
                               ),
@@ -154,9 +158,9 @@ class _MainPageContentState extends State<MainPageContent> {
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(30)),
                                     border: Border.all(
-                                        color: Colors.orange,
+                                        color: CalaColors.orange,
                                         style: BorderStyle.solid),
-                                    progressColor: Colors.orange,
+                                    progressColor: CalaColors.orange,
                                   ),
                                 ),
                               ),
@@ -172,9 +176,9 @@ class _MainPageContentState extends State<MainPageContent> {
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(30)),
                                     border: Border.all(
-                                        color: Colors.green,
+                                        color: CalaColors.green,
                                         style: BorderStyle.solid),
-                                    progressColor: Colors.green,
+                                    progressColor: CalaColors.green,
                                   ),
                                 ),
                               ),
@@ -224,7 +228,7 @@ class _MainPageContentState extends State<MainPageContent> {
                                         fontWeight: FontWeight.bold,
                                         color: _calCVal < _calMVal
                                             ? CalaColors.textDarker
-                                            : Colors.red,
+                                            : CalaColors.red,
                                       ),
                                     ),
                                     Text('/$_calMVal' + 'kcal'),
@@ -241,7 +245,7 @@ class _MainPageContentState extends State<MainPageContent> {
                                         fontWeight: FontWeight.bold,
                                         color: _carbCVal < _carbMVal
                                             ? CalaColors.textDarker
-                                            : Colors.red,
+                                            : CalaColors.red,
                                       ),
                                     ),
                                     Text('/$_carbMVal' + 'gr'),
@@ -258,7 +262,7 @@ class _MainPageContentState extends State<MainPageContent> {
                                         fontWeight: FontWeight.bold,
                                         color: _protCVal < _protMVal
                                             ? CalaColors.textDarker
-                                            : Colors.red,
+                                            : CalaColors.red,
                                       ),
                                     ),
                                     Text('/$_protMVal' + 'gr'),
@@ -275,7 +279,7 @@ class _MainPageContentState extends State<MainPageContent> {
                                         fontWeight: FontWeight.bold,
                                         color: _grasCVal < _grasMVal
                                             ? CalaColors.textDarker
-                                            : Colors.red,
+                                            : CalaColors.red,
                                       ),
                                     ),
                                     Text('/$_grasMVal' + 'gr'),
@@ -310,7 +314,8 @@ class _MainPageContentState extends State<MainPageContent> {
                               chartValuesOptions: ChartValuesOptions(
                                   decimalPlaces: 2,
                                   showChartValuesInPercentage: true,
-                                  chartValueBackgroundColor: Colors.transparent,
+                                  chartValueBackgroundColor:
+                                      CalaColors.transparent,
                                   chartValueStyle: TextStyle(
                                       fontSize: 15,
                                       fontWeight: FontWeight.bold)),
@@ -352,7 +357,7 @@ class _MainPageContentState extends State<MainPageContent> {
                           child: Text(
                             'Nada que mostrar...',
                             style: TextStyle(
-                              color: Colors.grey[500],
+                              color: CalaColors.grey[500],
                               fontSize: 17,
                               fontWeight: FontWeight.w300,
                             ),
@@ -372,7 +377,7 @@ class _MainPageContentState extends State<MainPageContent> {
       });
     }
     _calCVal = _carbCVal = _protCVal = _grasCVal = 0;
-    _dbHelper.getObjetivosMVals().then((listaMVals) {
+    _dbHelper.getObjetivoDiario().then((listaMVals) {
       _calMVal = listaMVals[0].toInt();
       _carbMVal = listaMVals[1].toInt();
       _protMVal = listaMVals[2].toInt();
@@ -430,11 +435,11 @@ class _MainPageContentState extends State<MainPageContent> {
                 await _dbHelper.deleteIngesta(ingesta.id);
                 update(false);
               },
-              child: Icon(Icons.delete, color: Colors.white),
+              child: Icon(Icons.delete, color: CalaColors.white),
               style: ElevatedButton.styleFrom(
                 shape: CircleBorder(),
                 padding: EdgeInsets.all(20),
-                primary: Colors.red,
+                primary: CalaColors.red,
               ),
             ),
           ),

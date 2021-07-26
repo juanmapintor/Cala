@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'CalaColors.dart';
+
 class CalaIcons {
   static const principalIcon = Icon(Icons.calendar_view_day);
   static const histIcon = Icon(Icons.calendar_today);
@@ -11,6 +13,6 @@ class CalaIcons {
   static const addIcon = Icon(Icons.add);
   static const addIconWhite = Icon(
     Icons.add,
-    color: Colors.white,
+    color: CalaColors.white,
   );
 }

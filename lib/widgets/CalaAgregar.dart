@@ -71,7 +71,7 @@ class _CalaFormState extends State<CalaForm> {
   Widget build(BuildContext context) {
     Widget loadingIndicator = _load
         ? new Container(
-            color: Colors.grey[300],
+            color: CalaColors.grey[300],
             width: 70.0,
             height: 70.0,
             child: new Padding(
@@ -81,7 +81,7 @@ class _CalaFormState extends State<CalaForm> {
         : new Container();
     Widget successIndicator = _success
         ? new Container(
-            color: Colors.green[600],
+            color: CalaColors.green[600],
             width: 70.0,
             height: 70.0,
             child: new Padding(
@@ -90,7 +90,7 @@ class _CalaFormState extends State<CalaForm> {
                 child: Icon(
                   Icons.check_circle,
                   size: 60,
-                  color: Colors.white,
+                  color: CalaColors.white,
                 ),
               ),
             ),
@@ -98,7 +98,7 @@ class _CalaFormState extends State<CalaForm> {
         : new Container();
     Widget failIndicator = _fail
         ? new Container(
-            color: Colors.red[700],
+            color: CalaColors.red[700],
             width: 70.0,
             height: 70.0,
             child: new Padding(
@@ -107,7 +107,7 @@ class _CalaFormState extends State<CalaForm> {
                 child: Icon(
                   Icons.block,
                   size: 60,
-                  color: Colors.white,
+                  color: CalaColors.white,
                 ),
               ),
             ),
@@ -117,7 +117,7 @@ class _CalaFormState extends State<CalaForm> {
       padding: EdgeInsets.all(10),
       margin: EdgeInsets.all(20),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20), color: Colors.grey[50]),
+          borderRadius: BorderRadius.circular(20), color: CalaColors.grey[50]),
       child: Form(
         key: _formKey,
         child: Padding(
@@ -300,7 +300,7 @@ class _CalaFormState extends State<CalaForm> {
                 onPressed: () {
                   add(context);
                 },
-                style: ElevatedButton.styleFrom(primary: Colors.green),
+                style: ElevatedButton.styleFrom(primary: CalaColors.green),
                 child: Text('Agregar'),
               ),
             ],
@@ -313,7 +313,7 @@ class _CalaFormState extends State<CalaForm> {
       children: [
         Expanded(
           child: Container(
-            color: Colors.grey[300],
+            color: CalaColors.grey[300],
             child: Center(
               child: form,
             ),
@@ -321,7 +321,7 @@ class _CalaFormState extends State<CalaForm> {
         ),
         Container(
           height: 70,
-          color: Colors.grey[300],
+          color: CalaColors.grey[300],
           child: Column(
             children: [
               new Align(
@@ -347,7 +347,7 @@ class _CalaFormState extends State<CalaForm> {
     setState(() {
       _load = true;
     });
-    var vals = await dbHelper.getMVals(id);
+    var vals = await dbHelper.getMacrosComida(id);
     setState(() {
       _load = false;
       contEnabled = true;
