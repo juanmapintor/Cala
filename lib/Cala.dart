@@ -1,3 +1,4 @@
+import 'package:cala/widgets/CalaWait.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cala/helpers/DBHelper.dart';
@@ -8,6 +9,7 @@ import 'package:cala/widgets/CalaAgregar.dart';
 import 'package:cala/widgets/CalaCatalogo.dart';
 import 'package:cala/widgets/CalaObjetivos.dart';
 import 'package:cala/widgets/CalaProgreso.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 class Cala extends StatefulWidget {
@@ -29,8 +31,18 @@ class _CalaState extends State<Cala> {
   late CalaAgregar agregarComida;
   late CalaAgregar agregarIngesta;
 
+  late CalaWait espera;
+
+  var _ready = false;
+
   _CalaState() {
     dbHelper = DBHelper();
+
+    dbHelper.createDB().then((value) {
+      setState(() {
+        _ready = value;
+      });
+    });
 
     mainPage = CalaMainPage(dbHelper);
     historialPage = CalaHistorial(dbHelper);
@@ -38,15 +50,21 @@ class _CalaState extends State<Cala> {
     progresoPage = CalaProgreso(dbHelper);
     objetivosPage = CalaObjetivos(dbHelper);
 
+    espera = CalaWait();
+
     agregarComida = CalaAgregar(dbHelper, true);
     agregarIngesta = CalaAgregar(dbHelper, false);
   }
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     return MaterialApp(
       title: 'Cala',
       routes: {
-        '/': (context) => mainPage,
+        '/': (context) => _ready ? mainPage : espera,
         '/historial': (context) => historialPage,
         '/catalogo': (context) => catalogoPage,
         '/progreso': (context) => progresoPage,

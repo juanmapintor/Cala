@@ -8,26 +8,30 @@ class TableContents {
       children: cellsText
           .map(
             (cellText) => Expanded(
-              child: Padding(
-                padding: EdgeInsets.all(2),
-                child: Container(
-                  color: isHeader ? color[800] : color[400],
-                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 0),
-                  child: Center(
-                    child: Text(
-                      cellText,
-                      style: isHeader
-                          ? TextStyle(
-                              color: CalaColors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                            )
-                          : TextStyle(
-                              color: CalaColors.black,
-                              fontWeight: FontWeight.w300,
-                              fontSize: 15,
-                            ),
-                    ),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: isHeader ? color[600] : color[100],
+                  border: Border.all(
+                    color: color[700]!,
+                    style: BorderStyle.solid,
+                    width: 0.3,
+                  ),
+                ),
+                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+                child: Center(
+                  child: Text(
+                    cellText,
+                    style: isHeader
+                        ? TextStyle(
+                            color: CalaColors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          )
+                        : TextStyle(
+                            color: CalaColors.black,
+                            fontWeight: FontWeight.w300,
+                            fontSize: 15,
+                          ),
                   ),
                 ),
               ),
@@ -41,38 +45,46 @@ class TableContents {
     return Row(
       children: [
         Expanded(
-          child: Padding(
-            padding: EdgeInsets.all(2),
-            child: Container(
+          child: Container(
+            decoration: BoxDecoration(
               color: color[600],
-              padding: EdgeInsets.symmetric(vertical: 5, horizontal: 0),
-              child: Center(
-                child: Text(
-                  header,
-                  style: TextStyle(
-                    color: CalaColors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
-                  ),
+              border: Border.all(
+                color: color[700]!,
+                style: BorderStyle.solid,
+                width: 0.3,
+              ),
+            ),
+            padding: EdgeInsets.symmetric(vertical: 5, horizontal: 0),
+            child: Center(
+              child: Text(
+                header,
+                style: TextStyle(
+                  color: CalaColors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
                 ),
               ),
             ),
           ),
         ),
         Expanded(
-          child: Padding(
-            padding: EdgeInsets.all(2),
-            child: Container(
-              color: color[200],
-              padding: EdgeInsets.symmetric(vertical: 5, horizontal: 0),
-              child: Center(
-                child: Text(
-                  data.toStringAsFixed(2),
-                  style: TextStyle(
-                    color: CalaColors.black,
-                    fontWeight: FontWeight.w300,
-                    fontSize: 15,
-                  ),
+          child: Container(
+            decoration: BoxDecoration(
+              color: color[100],
+              border: Border.all(
+                color: color[700]!,
+                style: BorderStyle.solid,
+                width: 0.3,
+              ),
+            ),
+            padding: EdgeInsets.symmetric(vertical: 5, horizontal: 0),
+            child: Center(
+              child: Text(
+                data.toStringAsFixed(2),
+                style: TextStyle(
+                  color: CalaColors.black,
+                  fontWeight: FontWeight.w300,
+                  fontSize: 15,
                 ),
               ),
             ),

@@ -1,5 +1,5 @@
-import 'package:cala/helpers/IngestaHistorial.dart';
 import 'package:cala/helpers/DBHelper.dart';
+import 'package:cala/helpers/datamodel/ObjetosNutricionales.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cala/widgets/configs/CalaColors.dart';
@@ -26,7 +26,7 @@ class _CalaHistorialState extends State<CalaHistorial> {
   var _totGras = 0.0;
 
   var _selectedFecha = 'Seleccione una fecha...';
-  late List<IngestaHistorial> _ingestas;
+  late List<Ingesta> _ingestas;
 
   _CalaHistorialState(this._dbHelper);
   @override
@@ -132,7 +132,7 @@ class _CalaHistorialState extends State<CalaHistorial> {
     );
   }
 
-  Container makeFoodShower(IngestaHistorial ingesta) {
+  Container makeFoodShower(Ingesta ingesta) {
     return Container(
       padding: EdgeInsets.only(left: 5, top: 5, right: 5),
       child: Column(
@@ -142,19 +142,19 @@ class _CalaHistorialState extends State<CalaHistorial> {
           TableContents.makeTableRow(
               false,
               [
-                ingesta.horario,
+                ingesta.hora,
                 ingesta.nombre,
-                ingesta.cant.toStringAsFixed(2)
+                ingesta.cantidadIngesta.toStringAsFixed(2)
               ],
               CalaColors.orange),
           TableContents.makeInfoRow(
-              'Calorias: ', ingesta.cals, CalaColors.orange),
+              'Calorias: ', ingesta.calorias, CalaColors.orange),
           TableContents.makeInfoRow(
-              'Proteinas: ', ingesta.prot, CalaColors.orange),
+              'Proteinas: ', ingesta.proteinas, CalaColors.orange),
           TableContents.makeInfoRow(
-              'Carbohidratos: ', ingesta.carb, CalaColors.orange),
+              'Carbohidratos: ', ingesta.carbohidratos, CalaColors.orange),
           TableContents.makeInfoRow(
-              'Grasas: ', ingesta.gras, CalaColors.orange),
+              'Grasas: ', ingesta.grasas, CalaColors.orange),
           Padding(
             padding: EdgeInsets.only(top: 5),
             child: ElevatedButton(
@@ -200,7 +200,7 @@ class _CalaHistorialState extends State<CalaHistorial> {
       _gotten = false;
       _load = true;
     });
-    _ingestas = await _dbHelper.getIngestas(_selectedFecha);
+    _ingestas = await _dbHelper.getListaIngestas(_selectedFecha);
     updateTotals(_ingestas);
 
     setState(() {
@@ -209,14 +209,14 @@ class _CalaHistorialState extends State<CalaHistorial> {
     });
   }
 
-  void updateTotals(List<IngestaHistorial> ingestas) {
+  void updateTotals(List<Ingesta> ingestas) {
     _totCals = _totCarb = _totProt = _totGras = 0.0;
     for (var ingesta in ingestas) {
       setState(() {
-        _totCals += ingesta.cals;
-        _totCarb += ingesta.carb;
-        _totProt += ingesta.prot;
-        _totGras += ingesta.gras;
+        _totCals += ingesta.calorias;
+        _totCarb += ingesta.carbohidratos;
+        _totProt += ingesta.proteinas;
+        _totGras += ingesta.grasas;
       });
     }
   }

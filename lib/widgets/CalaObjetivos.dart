@@ -1,4 +1,5 @@
 import 'package:cala/helpers/DBHelper.dart';
+import 'package:cala/helpers/datamodel/ObjetosNutricionales.dart';
 import 'package:cala/widgets/configs/CalaIcons.dart';
 import 'package:flutter/material.dart';
 
@@ -24,9 +25,7 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
   _CalaObjetivosState(this._dbHelper) {
     update(true);
     _dbHelper.broadcastStream.listen((msg) {
-      if (msg == 'updObj') {
-        update(false);
-      }
+      if (msg == 'updObj' && mounted) update(false);
     });
   }
   @override
@@ -81,15 +80,20 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
       });
     }
     _dbHelper.getObjetivoDiario().then((obj) {
-      objetivosDaily = obj;
+      objetivosDaily = [
+        obj.calorias,
+        obj.carbohidratos,
+        obj.proteinas,
+        obj.grasas
+      ];
       setState(() {
-        _gottenDaily = obj[0] != 0 ? 1 : 2;
+        _gottenDaily = obj.calorias != 0 ? 1 : 2;
       });
     });
     _dbHelper.getObjetivoGral().then((obj) {
-      objetivosGral = obj;
+      objetivosGral = [obj.peso, obj.imc, obj.porcGrasa];
       setState(() {
-        _gottenGral = obj[0] != 0 ? 1 : 2;
+        _gottenGral = obj.peso != 0 ? 1 : 2;
       });
     });
   }
@@ -403,8 +407,12 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
                   var prot = (cal * (protper / 100)) / 4;
                   var gras = (cal * (grasper / 100)) / 9;
                   showWaiting('Agregando...');
-                  var success =
-                      await _dbHelper.addObjetivoDiario(cal, carb, prot, gras);
+                  var success = await _dbHelper.addObjetivoDiario(
+                      ObjetivoDiario(
+                          calorias: cal,
+                          carbohidratos: carb,
+                          proteinas: prot,
+                          grasas: gras));
 
                   if (success) {
                     Navigator.of(context).pop();

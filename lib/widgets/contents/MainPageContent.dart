@@ -1,5 +1,5 @@
 import 'package:cala/helpers/DBHelper.dart';
-import 'package:cala/helpers/IngestaHistorial.dart';
+import 'package:cala/helpers/datamodel/ObjetosNutricionales.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -36,12 +36,12 @@ class _MainPageContentState extends State<MainPageContent> {
 
   late DBHelper _dbHelper;
 
-  late List<IngestaHistorial> _ingestas;
+  late List<Ingesta> _ingestas;
 
   _MainPageContentState(this._dbHelper) {
     update(true);
     _dbHelper.broadcastStream.listen((event) {
-      if (event == 'updMain') update(false);
+      if (event == 'updMain' && mounted) update(false);
     });
   }
 
@@ -106,7 +106,7 @@ class _MainPageContentState extends State<MainPageContent> {
                             style: TextStyle(
                                 color: CalaColors.textDark,
                                 fontSize: 25,
-                                fontWeight: FontWeight.bold),
+                                fontWeight: FontWeight.w300),
                           ),
                           Row(
                             children: [
@@ -297,7 +297,7 @@ class _MainPageContentState extends State<MainPageContent> {
                             style: TextStyle(
                                 color: CalaColors.textDark,
                                 fontSize: 25,
-                                fontWeight: FontWeight.bold),
+                                fontWeight: FontWeight.w300),
                           ),
                           SizedBox(
                             width: double.infinity,
@@ -330,7 +330,7 @@ class _MainPageContentState extends State<MainPageContent> {
                             style: TextStyle(
                                 color: CalaColors.textDark,
                                 fontSize: 25,
-                                fontWeight: FontWeight.bold),
+                                fontWeight: FontWeight.w300),
                           ),
                           CarouselSlider(
                             items: _ingestas
@@ -377,19 +377,19 @@ class _MainPageContentState extends State<MainPageContent> {
       });
     }
     _calCVal = _carbCVal = _protCVal = _grasCVal = 0;
-    _dbHelper.getObjetivoDiario().then((listaMVals) {
-      _calMVal = listaMVals[0].toInt();
-      _carbMVal = listaMVals[1].toInt();
-      _protMVal = listaMVals[2].toInt();
-      _grasMVal = listaMVals[3].toInt();
+    _dbHelper.getObjetivoDiario().then((objetivo) {
+      _calMVal = objetivo.calorias.toInt();
+      _carbMVal = objetivo.carbohidratos.toInt();
+      _protMVal = objetivo.proteinas.toInt();
+      _grasMVal = objetivo.grasas.toInt();
       _dbHelper
-          .getIngestas(DateFormat('dd-MM-yyyy').format(DateTime.now()))
+          .getListaIngestas(DateFormat('dd-MM-yyyy').format(DateTime.now()))
           .then((ingestasHoy) {
         for (var ingesta in ingestasHoy) {
-          _calCVal += ingesta.cals.toInt();
-          _carbCVal += ingesta.carb.toInt();
-          _protCVal += ingesta.prot.toInt();
-          _grasCVal += ingesta.gras.toInt();
+          _calCVal += ingesta.calorias.toInt();
+          _carbCVal += ingesta.carbohidratos.toInt();
+          _protCVal += ingesta.proteinas.toInt();
+          _grasCVal += ingesta.grasas.toInt();
         }
         _ingestas = ingestasHoy;
 
@@ -402,7 +402,7 @@ class _MainPageContentState extends State<MainPageContent> {
     });
   }
 
-  Container makeFoodShower(IngestaHistorial ingesta) {
+  Container makeFoodShower(Ingesta ingesta) {
     return Container(
       padding: EdgeInsets.only(left: 5, top: 5, right: 5),
       child: Column(
@@ -412,18 +412,19 @@ class _MainPageContentState extends State<MainPageContent> {
           TableContents.makeTableRow(
               false,
               [
-                ingesta.horario,
+                ingesta.hora,
                 ingesta.nombre,
-                ingesta.cant.toStringAsFixed(2)
+                ingesta.cantidadIngesta.toStringAsFixed(2)
               ],
               CalaColors.teal),
           TableContents.makeInfoRow(
-              'Calorias: ', ingesta.cals, CalaColors.teal),
+              'Calorias: ', ingesta.calorias, CalaColors.teal),
           TableContents.makeInfoRow(
-              'Proteinas: ', ingesta.prot, CalaColors.teal),
+              'Proteinas: ', ingesta.proteinas, CalaColors.teal),
           TableContents.makeInfoRow(
-              'Carbohidratos: ', ingesta.carb, CalaColors.teal),
-          TableContents.makeInfoRow('Grasas: ', ingesta.gras, CalaColors.teal),
+              'Carbohidratos: ', ingesta.carbohidratos, CalaColors.teal),
+          TableContents.makeInfoRow(
+              'Grasas: ', ingesta.grasas, CalaColors.teal),
           Padding(
             padding: EdgeInsets.only(top: 5),
             child: ElevatedButton(

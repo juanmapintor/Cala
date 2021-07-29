@@ -83,17 +83,16 @@ class _CalaDrawerHeader extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.account_circle,
-              size: 100,
-              color: CalaColors.white,
+            Image.asset(
+              'lib/assets/cala_icon.png',
+              height: 100,
             ),
             Text(
-              'Usuario Local',
+              'CALA',
               style: TextStyle(
                 color: CalaColors.white,
                 fontSize: 24,
-                fontWeight: FontWeight.w200,
+                fontWeight: FontWeight.w300,
               ),
             ),
           ],

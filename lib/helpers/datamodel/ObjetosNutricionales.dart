@@ -20,21 +20,26 @@ class UnidadNutricional {
     required this.grasas,
   });
 
-  Map<String, dynamic> toMap() {
-    return {
-      'calorias': calorias,
-      'carbohidratos': carbohidratos,
-      'proteinas': proteinas,
-      'grasas': grasas
-    };
-  }
-
   @override
   String toString() {
     return id != -1
         ? 'UnidadNutricional {id: $id, calorias: $calorias, carbohidratos: $carbohidratos, proteinas: $proteinas, grasas: $grasas}'
         : 'UnidadNutricional {calorias: $calorias, carbohidratos: $carbohidratos, proteinas: $proteinas, grasas: $grasas}';
   }
+}
+
+class ObjetivoDiario extends UnidadNutricional {
+  ObjetivoDiario({
+    required double calorias,
+    required double carbohidratos,
+    required double proteinas,
+    required double grasas,
+  }) : super(
+          calorias: calorias,
+          carbohidratos: carbohidratos,
+          proteinas: proteinas,
+          grasas: grasas,
+        );
 }
 
 class UnidadNutricionalCuantificada extends UnidadNutricional {
@@ -67,14 +72,6 @@ class UnidadNutricionalCuantificada extends UnidadNutricional {
           proteinas: proteinas,
           grasas: grasas,
         );
-
-  @override
-  Map<String, dynamic> toMap() {
-    return {
-      ...super.toMap(),
-      'cantidad': cantidad,
-    };
-  }
 
   @override
   String toString() {
@@ -118,15 +115,6 @@ class Comida extends UnidadNutricionalCuantificada {
           proteinas: proteinas,
           grasas: grasas,
         );
-
-  @override
-  Map<String, dynamic> toMap() {
-    return {
-      ...super.toMap(),
-      'nombre': nombre,
-    };
-  }
-
   @override
   String toString() {
     return id != -1
@@ -135,58 +123,33 @@ class Comida extends UnidadNutricionalCuantificada {
   }
 }
 
-class Ingesta extends Comida {
-  final String horario;
+class Ingesta {
+  final int id;
+  final String nombre;
+  final double cantidadIngesta;
+  final String fecha;
+  final String hora;
+  final double calorias;
+  final double carbohidratos;
+  final double proteinas;
+  final double grasas;
 
-  Ingesta({
-    required String nombre,
-    required this.horario,
-    required double cantidad,
-    required double calorias,
-    required double carbohidratos,
-    required double proteinas,
-    required double grasas,
-  }) : super(
-          nombre: nombre,
-          cantidad: cantidad,
-          calorias: calorias,
-          carbohidratos: carbohidratos,
-          proteinas: proteinas,
-          grasas: grasas,
-        );
-
-  Ingesta.ided({
-    required int id,
-    required String nombre,
-    required this.horario,
-    required double cantidad,
-    required double calorias,
-    required double carbohidratos,
-    required double proteinas,
-    required double grasas,
-  }) : super.ided(
-          id: id,
-          nombre: nombre,
-          cantidad: cantidad,
-          calorias: calorias,
-          carbohidratos: carbohidratos,
-          proteinas: proteinas,
-          grasas: grasas,
-        );
-
-  @override
-  Map<String, dynamic> toMap() {
-    return {
-      ...super.toMap(),
-      'horario': horario,
-    };
-  }
+  Ingesta(
+      {required this.id,
+      required this.nombre,
+      required this.cantidadIngesta,
+      required this.fecha,
+      required this.hora,
+      required this.calorias,
+      required this.carbohidratos,
+      required this.proteinas,
+      required this.grasas});
 
   @override
   String toString() {
     return id != -1
-        ? 'Ingesta {id: $id, nombre: $nombre, horario: $horario, cantidad: $cantidad, calorias: $calorias, carbohidratos: $carbohidratos, proteinas: $proteinas, grasas: $grasas}'
-        : 'Ingesta {nombre: $nombre, horario: $horario, cantidad: $cantidad, calorias: $calorias, carbohidratos: $carbohidratos, proteinas: $proteinas, grasas: $grasas}';
+        ? 'Ingesta {id: $id, nombre: $nombre, fecha: $fecha, hora: $hora, cantidad: $cantidadIngesta, calorias: $calorias, carbohidratos: $carbohidratos, proteinas: $proteinas, grasas: $grasas}'
+        : 'Ingesta {nombre: $nombre, fecha: $fecha, hora: $hora, cantidad: $cantidadIngesta, calorias: $calorias, carbohidratos: $carbohidratos, proteinas: $proteinas, grasas: $grasas}';
   }
 }
 
@@ -206,19 +169,24 @@ class UnidadPesaje {
     required this.porcGrasa,
   });
 
-  Map<String, dynamic> toMap() {
-    return {
-      'peso': peso,
-      'porcGrasa': porcGrasa,
-    };
-  }
-
   @override
   String toString() {
     return id != -1
         ? 'UnidadPesaje {id: $id, peso: $peso, porcGrasa: $porcGrasa}'
         : 'UnidadPesaje {peso: $peso, porcGrasa: $porcGrasa}';
   }
+}
+
+class ObjetivoGeneral extends UnidadPesaje {
+  final double imc;
+  ObjetivoGeneral({
+    required double peso,
+    required this.imc,
+    required double porcGrasa,
+  }) : super(
+          peso: peso,
+          porcGrasa: porcGrasa,
+        );
 }
 
 class Pesaje extends UnidadPesaje {
@@ -243,14 +211,6 @@ class Pesaje extends UnidadPesaje {
           peso: peso,
           porcGrasa: porcGrasa,
         );
-
-  @override
-  Map<String, dynamic> toMap() {
-    return {
-      ...super.toMap(),
-      'fecha': fecha,
-    };
-  }
 
   @override
   String toString() {

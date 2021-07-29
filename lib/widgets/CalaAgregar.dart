@@ -1,5 +1,5 @@
 import 'package:cala/helpers/DBHelper.dart';
-import 'package:cala/helpers/Tuple.dart';
+import 'package:cala/helpers/datamodel/ObjetosNutricionales.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cala/widgets/configs/CalaColors.dart';
@@ -36,7 +36,9 @@ class _CalaFormState extends State<CalaForm> {
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  var items = [Tuple('noid', 'Seleccione...')];
+  var items = [
+    {'id': 'noid', 'text': 'Seleccione...'}
+  ];
   var dropdownValue = 'noid';
 
   double cantMVal = 0, calMVal = 0, carbMVal = 0, protMVal = 0, grasMVal = 0;
@@ -157,7 +159,7 @@ class _CalaFormState extends State<CalaForm> {
                         setState(() {
                           dropdownValue = newValue!;
                           if (newValue != 'noid') {
-                            getMVals(newValue);
+                            getMVals(int.parse(newValue));
                             var value = cantCtl.text;
                             if (value.characters.length != 0)
                               setCalculatedValues(value);
@@ -170,10 +172,10 @@ class _CalaFormState extends State<CalaForm> {
                             : null;
                       },
                       items: items.map<DropdownMenuItem<String>>(
-                          (Tuple<String, String> value) {
+                          (Map<String, String> value) {
                         return DropdownMenuItem<String>(
-                          value: value.r,
-                          child: Text(value.s),
+                          value: value['id'],
+                          child: Text(value['text']!),
                         );
                       }).toList(),
                     ),
@@ -343,22 +345,22 @@ class _CalaFormState extends State<CalaForm> {
     );
   }
 
-  Future<void> getMVals(String id) async {
+  Future<void> getMVals(int id) async {
     setState(() {
       _load = true;
     });
-    var vals = await dbHelper.getMacrosComida(id);
+    var comida = await dbHelper.getComida(id);
     setState(() {
       _load = false;
       contEnabled = true;
     });
     print('MVals recobidos: ');
-    print(vals);
-    cantMVal = vals[0];
-    calMVal = vals[1];
-    carbMVal = vals[2];
-    protMVal = vals[3];
-    grasMVal = vals[4];
+    print(comida);
+    cantMVal = comida.cantidad;
+    calMVal = comida.calorias;
+    carbMVal = comida.carbohidratos;
+    protMVal = comida.proteinas;
+    grasMVal = comida.grasas;
   }
 
   void showSuccess(BuildContext context) {
@@ -386,8 +388,11 @@ class _CalaFormState extends State<CalaForm> {
   }
 
   Future<void> getComidas() async {
-    var comidas = await dbHelper.getComidasNameID();
-    items.addAll(comidas);
+    final comidas = await dbHelper.getListaComidas();
+    final comidaList = comidas
+        .map((comida) => {'id': comida.id.toString(), 'text': comida.nombre})
+        .toList();
+    items.addAll(comidaList);
     setState(() {
       _load = false;
     });
@@ -422,20 +427,20 @@ class _CalaFormState extends State<CalaForm> {
       var added = false;
       if (_comida) {
         added = await dbHelper.addComida(
-            nom: nomCtl.text,
-            cant: double.parse(cantCtl.text),
-            cal: double.parse(calCtl.text),
-            carb: double.parse(carbCtl.text),
-            prot: double.parse(protCtl.text),
-            gras: double.parse(grasCtl.text));
+          Comida(
+            nombre: nomCtl.text,
+            cantidad: double.parse(cantCtl.text),
+            calorias: double.parse(calCtl.text),
+            carbohidratos: double.parse(carbCtl.text),
+            proteinas: double.parse(protCtl.text),
+            grasas: double.parse(grasCtl.text),
+          ),
+        );
       } else {
         added = await dbHelper.addIngesta(
-            id: dropdownValue,
-            cant: double.parse(cantCtl.text),
-            cal: double.parse(calCtl.text),
-            carb: double.parse(carbCtl.text),
-            prot: double.parse(protCtl.text),
-            gras: double.parse(grasCtl.text));
+          comidaID: dropdownValue,
+          cantIngesta: double.parse(cantCtl.text),
+        );
       }
       setState(() {
         _load = false;

@@ -1,18 +1,15 @@
 import 'dart:math';
 
 import 'package:cala/helpers/DBHelper.dart';
-import 'package:cala/helpers/Tuple.dart';
+import 'package:cala/helpers/datamodel/ObjetosNutricionales.dart';
+import 'package:cala/widgets/configs/CalaColors.dart';
+import 'package:cala/widgets/configs/CalaIcons.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-
-import 'package:cala/widgets/configs/CalaColors.dart';
 import 'package:intl/intl.dart';
-
-import 'configs/CalaIcons.dart';
 
 class CalaProgreso extends StatefulWidget {
   final DBHelper _dbHelper;
-
   CalaProgreso(this._dbHelper);
   @override
   _CalaProgresoState createState() => _CalaProgresoState(_dbHelper);
@@ -20,145 +17,28 @@ class CalaProgreso extends StatefulWidget {
 
 class _CalaProgresoState extends State<CalaProgreso> {
   final DBHelper _dbHelper;
+
+  List<Map<String, dynamic>> _data = [];
+  late ObjetivoGeneral _objetivo;
+
   var _load = true;
-
-  late List<Tuple<double, DateTime>> _dataPeso;
-  late List<Tuple<double, DateTime>> _dataGrasa;
-  late List<Tuple<double, DateTime>> _dataIMC;
-
-  late List<double> _objetivos;
 
   _CalaProgresoState(this._dbHelper) {
     update(true);
     _dbHelper.broadcastStream.listen((msg) {
-      if (msg == 'updProg') update(false);
+      if (msg == 'updProg' && mounted) update(false);
     });
   }
+
   @override
   Widget build(BuildContext context) {
-    Widget loading = new Align(
-      child: new Container(
-        width: 70.0,
-        height: 70.0,
-        child: new Padding(
-            padding: const EdgeInsets.all(5.0),
-            child: new Center(child: new CircularProgressIndicator())),
-      ),
-      alignment: FractionalOffset.center,
-    );
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Progreso'),
         backgroundColor: CalaColors.mainTealColor,
       ),
-      body: _load
-          ? loading
-          : ListView(
-              children: [
-                Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(10),
-                    child: Text(
-                      'Peso',
-                      style:
-                          TextStyle(fontSize: 23, fontWeight: FontWeight.w500),
-                    ),
-                  ),
-                ),
-                _dataPeso.isEmpty
-                    ? Container(
-                        height: 350,
-                        child: Center(
-                          child: Text(
-                            'Comience agregando un pesaje',
-                            style: TextStyle(
-                              color: CalaColors.grey[500],
-                              fontSize: 17,
-                              fontWeight: FontWeight.w300,
-                            ),
-                          ),
-                        ),
-                      )
-                    : getGraph(_dataPeso,
-                        minX: 0,
-                        maxX: daysBetween(_dataPeso.first.s, _dataPeso.last.s)
-                            .toDouble(),
-                        minY: _objetivos[0] - 5,
-                        maxY: getMax(_dataPeso) + 5),
-                Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(10),
-                    child: Text(
-                      '% Grasa',
-                      style:
-                          TextStyle(fontSize: 23, fontWeight: FontWeight.w500),
-                    ),
-                  ),
-                ),
-                _dataGrasa.isEmpty
-                    ? Container(
-                        height: 350,
-                        child: Center(
-                          child: Text(
-                            'Comience agregando un pesaje',
-                            style: TextStyle(
-                              color: CalaColors.grey[500],
-                              fontSize: 17,
-                              fontWeight: FontWeight.w300,
-                            ),
-                          ),
-                        ),
-                      )
-                    : getGraph(
-                        _dataGrasa,
-                        minX: 0,
-                        maxX: daysBetween(_dataGrasa.first.s, _dataGrasa.last.s)
-                            .toDouble(),
-                        minY: 0,
-                        maxY: 100,
-                      ),
-                Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(10),
-                    child: Text(
-                      'IMC',
-                      style:
-                          TextStyle(fontSize: 23, fontWeight: FontWeight.w500),
-                    ),
-                  ),
-                ),
-                _dataIMC.isEmpty
-                    ? Container(
-                        height: 350,
-                        child: Center(
-                          child: Text(
-                            'Comience agregando un pesaje',
-                            style: TextStyle(
-                              color: CalaColors.grey[500],
-                              fontSize: 17,
-                              fontWeight: FontWeight.w300,
-                            ),
-                          ),
-                        ),
-                      )
-                    : getGraph(
-                        _dataIMC,
-                        minX: 0,
-                        maxX: daysBetween(_dataIMC.first.s, _dataIMC.last.s)
-                            .toDouble(),
-                        minY: 10,
-                        maxY: 50,
-                      ),
-              ],
-            ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showAddOBG();
-        },
-        child: CalaIcons.addIcon,
-        backgroundColor: CalaColors.green,
-      ),
+      body: _load ? _loading() : _mainList(),
+      floatingActionButton: _floatingActionButton(),
     );
   }
 
@@ -169,15 +49,236 @@ class _CalaProgresoState extends State<CalaProgreso> {
       });
     }
 
-    _dataPeso = await _dbHelper.getPesos(30);
-    _dataGrasa = await _dbHelper.getPorcentajesGrasa(30);
-    _dataIMC = await _dbHelper.getIMCs(30);
+    _data = [];
 
-    _objetivos = await _dbHelper.getObjetivoGral();
+    var _pesajes = (await _dbHelper.getPesajes(10)).reversed.toList();
+
+    for (int i = 0; i < _pesajes.length; i++) {
+      var pesaje = _pesajes[i];
+      var fechaMaker = pesaje.fecha.split('-');
+      var fecha = DateTime.parse(
+          fechaMaker[2] + '-' + fechaMaker[1] + '-' + fechaMaker[0]);
+      if (i != 0) {
+        DateTime date1 = _data[0]['fecha'];
+        var value = daysBetween(date1, fecha).toDouble();
+        _data.add({
+          'value': value,
+          'fecha': fecha,
+          'title': fechaMaker[0] + '/' + fechaMaker[1],
+          'peso': pesaje.peso,
+          'porcGrasa': pesaje.porcGrasa
+        });
+      } else {
+        _data.add({
+          'value': 0.0,
+          'fecha': fecha,
+          'title': fechaMaker[0] + '/' + fechaMaker[1],
+          'peso': pesaje.peso,
+          'porcGrasa': pesaje.porcGrasa
+        });
+      }
+    }
+
+    _objetivo = await _dbHelper.getObjetivoGral();
 
     setState(() {
       _load = false;
     });
+  }
+
+  static Widget _loading() {
+    return new Align(
+      child: new Container(
+        width: 70.0,
+        height: 70.0,
+        child: new Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: new Center(child: new CircularProgressIndicator())),
+      ),
+      alignment: FractionalOffset.center,
+    );
+  }
+
+  static Widget _title(String text) {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.all(5),
+        child: Text(
+          text,
+          style: TextStyle(fontSize: 23, fontWeight: FontWeight.w400),
+        ),
+      ),
+    );
+  }
+
+  static Widget _infoVacio() {
+    return Container(
+      height: 300,
+      child: Center(
+        child: Text(
+          'Comience agregando un pesaje',
+          style: TextStyle(
+            color: CalaColors.grey[500],
+            fontSize: 17,
+            fontWeight: FontWeight.w300,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _mainList() {
+    return Column(
+      children: [
+        _title('Peso'),
+        _data.isEmpty ? _infoVacio() : _getGraph(true),
+        _title('% Grasa'),
+        _data.isEmpty ? _infoVacio() : _getGraph(false)
+      ],
+    );
+  }
+
+  Widget _getGraph(bool peso) {
+    return Container(
+      height: 300,
+      padding: EdgeInsets.all(15),
+      child: LineChart(
+        LineChartData(
+          minX: 0,
+          maxX: _data.last['value'],
+          minY: peso ? _objetivo.peso - 5 : _objetivo.porcGrasa - 5,
+          maxY: _max(peso) + 5,
+          titlesData: _titlesData(),
+          gridData: _gridData(),
+          borderData: _borderData(),
+          lineBarsData: [
+            _lineBarData(peso),
+          ],
+        ),
+      ),
+    );
+  }
+
+  int daysBetween(DateTime from, DateTime to) {
+    from = DateTime(from.year, from.month, from.day);
+    to = DateTime(to.year, to.month, to.day);
+    return (to.difference(from).inHours / 24).round();
+  }
+
+  double _max(bool peso) {
+    return _data
+        .map((mapeo) {
+          double pesoVal = mapeo['peso'];
+          double porcGrasaVal = mapeo['porcGrasa'];
+          return peso ? pesoVal : porcGrasaVal;
+        })
+        .toList()
+        .reduce(max);
+  }
+
+  FlTitlesData _titlesData() {
+    return FlTitlesData(
+      show: true,
+      bottomTitles: SideTitles(
+        rotateAngle: -60,
+        reservedSize: 35,
+        showTitles: true,
+        getTextStyles: (_) => TextStyle(
+          color: Color(0xff68737d),
+          fontWeight: FontWeight.w500,
+          fontSize: 14,
+        ),
+        getTitles: (value) {
+          for (var title in _data) {
+            if (value == title['value']) return title['title'];
+          }
+          return '';
+        },
+        margin: 5,
+      ),
+      leftTitles: SideTitles(
+        showTitles: true,
+        reservedSize: 35,
+        getTextStyles: (_) => TextStyle(
+          color: Color(0xff68737d),
+          fontWeight: FontWeight.w400,
+          fontSize: 12,
+        ),
+        getTitles: (value) {
+          return (value % 5) == 0 ? value.toString() : '';
+        },
+        margin: 5,
+      ),
+    );
+  }
+
+  FlGridData _gridData() {
+    return FlGridData(
+      show: true,
+      drawHorizontalLine: true,
+      getDrawingHorizontalLine: (value) {
+        return (value % 5) == 0
+            ? FlLine(
+                color: CalaColors.grey[400],
+                strokeWidth: 1,
+              )
+            : FlLine(
+                strokeWidth: 0,
+              );
+      },
+      drawVerticalLine: true,
+      getDrawingVerticalLine: (value) {
+        for (var title in _data) {
+          if (value == title['value'])
+            return FlLine(
+              color: CalaColors.grey[400],
+              strokeWidth: 1,
+            );
+        }
+        return FlLine(strokeWidth: 0);
+      },
+    );
+  }
+
+  FlBorderData _borderData() {
+    return FlBorderData(
+      show: true,
+      border: Border(
+          left: BorderSide(color: const Color(0xff37434d), width: 1),
+          bottom: BorderSide(color: const Color(0xff37434d), width: 1)),
+    );
+  }
+
+  LineChartBarData _lineBarData(bool peso) {
+    return LineChartBarData(
+      spots: _spots(peso),
+      isCurved: true,
+      colors: CalaColors.orangeGradientColors,
+      barWidth: 5,
+      belowBarData: BarAreaData(
+        show: true,
+        colors: CalaColors.orangeGradientColors
+            .map((color) => color.withOpacity(0.3))
+            .toList(),
+      ),
+    );
+  }
+
+  List<FlSpot> _spots(bool peso) {
+    return _data
+        .map((mapeo) =>
+            FlSpot(mapeo['value'], peso ? mapeo['peso'] : mapeo['porcGrasa']))
+        .toList();
+  }
+
+  FloatingActionButton _floatingActionButton() {
+    return FloatingActionButton(
+      onPressed: () {
+        showAddOBG();
+      },
+      child: CalaIcons.addIcon,
+      backgroundColor: CalaColors.green,
+    );
   }
 
   void showAddOBG() {
@@ -259,7 +360,10 @@ class _CalaProgresoState extends State<CalaProgreso> {
                 var peso = double.parse(pesoCtl.text);
                 var gras = double.parse(grasCtl.text);
                 showWaiting('Agregando...');
-                var success = await _dbHelper.addPesaje(peso, gras);
+                var success = await _dbHelper.addPesaje(Pesaje(
+                    fecha: DateFormat('dd-MM-yyyy').format(DateTime.now()),
+                    peso: peso,
+                    porcGrasa: gras));
                 if (success) {
                   Navigator.of(context).pop();
                   Navigator.of(context).pop();
@@ -329,131 +433,6 @@ class _CalaProgresoState extends State<CalaProgreso> {
             },
           )
         ],
-      ),
-    );
-  }
-
-  double getMax(List<Tuple<double, DateTime>> list) =>
-      list.map((e) => e.r).toList().reduce(max);
-
-  List<FlSpot> getSpots(List<Tuple<double, DateTime>> list) {
-    DateTime initial = list[0].s;
-    List<FlSpot> listSpot = [];
-    for (var data in list) {
-      var days = daysBetween(initial, data.s).toDouble();
-      var datar = double.parse(data.r.toStringAsFixed(2));
-      listSpot.add(FlSpot(days, datar));
-    }
-    return listSpot;
-  }
-
-  int daysBetween(DateTime from, DateTime to) {
-    from = DateTime(from.year, from.month, from.day);
-    to = DateTime(to.year, to.month, to.day);
-    return (to.difference(from).inHours / 24).round();
-  }
-
-  getTitleData(List<Tuple<double, DateTime>> list) => FlTitlesData(
-        show: true,
-        bottomTitles: SideTitles(
-          rotateAngle: -60,
-          showTitles: true,
-          reservedSize: 35,
-          getTextStyles: (value) => const TextStyle(
-            color: Color(0xff68737d),
-            fontWeight: FontWeight.w500,
-            fontSize: 14,
-          ),
-          getTitles: (value) {
-            DateTime initial = list[0].s;
-            for (var data in list) {
-              var days = daysBetween(initial, data.s).toDouble();
-              if ((value - days) == 0)
-                return DateFormat('dd-MM').format(data.s);
-            }
-            return '';
-          },
-          margin: 5,
-        ),
-        leftTitles: SideTitles(
-          showTitles: true,
-          reservedSize: 35,
-          getTextStyles: (value) => const TextStyle(
-            color: Color(0xff68737d),
-            fontWeight: FontWeight.w400,
-            fontSize: 12,
-          ),
-          getTitles: (value) {
-            return (value % 5) == 0 ? value.toString() : '';
-          },
-          margin: 5,
-        ),
-      );
-
-  Widget getGraph(List<Tuple<double, DateTime>> _data,
-      {required double minX,
-      required double maxX,
-      required double minY,
-      required double maxY}) {
-    return Container(
-      height: 350,
-      child: Padding(
-        padding: EdgeInsets.all(20),
-        child: LineChart(
-          LineChartData(
-            minX: minX,
-            maxX: maxX,
-            minY: minY,
-            maxY: maxY,
-            titlesData: getTitleData(_data),
-            gridData: FlGridData(
-              show: true,
-              getDrawingHorizontalLine: (value) {
-                return (value % 5) == 0
-                    ? FlLine(
-                        color: CalaColors.grey[400],
-                        strokeWidth: 1,
-                      )
-                    : FlLine(
-                        strokeWidth: 0,
-                      );
-              },
-              drawVerticalLine: true,
-              getDrawingVerticalLine: (value) {
-                var initial = _data[0].s;
-                for (var data in _data) {
-                  var days = daysBetween(initial, data.s).toDouble();
-                  if (value == days)
-                    return FlLine(
-                      color: CalaColors.grey[400],
-                      strokeWidth: 1,
-                    );
-                }
-                return FlLine(strokeWidth: 0);
-              },
-            ),
-            borderData: FlBorderData(
-              show: true,
-              border: Border(
-                  left: BorderSide(color: const Color(0xff37434d), width: 1),
-                  bottom: BorderSide(color: const Color(0xff37434d), width: 1)),
-            ),
-            lineBarsData: [
-              LineChartBarData(
-                spots: getSpots(_data),
-                isCurved: true,
-                colors: CalaColors.orangeGradientColors,
-                barWidth: 5,
-                belowBarData: BarAreaData(
-                  show: true,
-                  colors: CalaColors.orangeGradientColors
-                      .map((color) => color.withOpacity(0.3))
-                      .toList(),
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

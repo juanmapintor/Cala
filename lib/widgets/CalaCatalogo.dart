@@ -1,5 +1,5 @@
 import 'package:cala/helpers/DBHelper.dart';
-import 'package:cala/helpers/IngestaHistorial.dart';
+import 'package:cala/helpers/datamodel/ObjetosNutricionales.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cala/widgets/configs/CalaColors.dart';
@@ -18,12 +18,12 @@ class _CalaCatalogoState extends State<CalaCatalogo> {
   late DBHelper _dbHelper;
   var _load = true;
   var _gotten = false;
-  late List<IngestaHistorial> _ingestas;
+  late List<Comida> _ingestas;
 
   _CalaCatalogoState(this._dbHelper) {
     update(true);
     _dbHelper.broadcastStream.listen((msg) {
-      update(false);
+      if (msg == 'updCat' && mounted) update(false);
     });
   }
   @override
@@ -89,7 +89,7 @@ class _CalaCatalogoState extends State<CalaCatalogo> {
       });
     }
 
-    _dbHelper.getComidas().then((value) {
+    _dbHelper.getListaComidas().then((value) {
       _ingestas = value;
       setState(() {
         _load = false;
@@ -98,7 +98,7 @@ class _CalaCatalogoState extends State<CalaCatalogo> {
     });
   }
 
-  Container makeFoodShower(IngestaHistorial comida) {
+  Container makeFoodShower(Comida comida) {
     return Container(
       padding: EdgeInsets.only(left: 5, top: 5, right: 5),
       child: Column(
@@ -107,15 +107,16 @@ class _CalaCatalogoState extends State<CalaCatalogo> {
               true, ['Nombre', 'Cantidad'], CalaColors.orange),
           TableContents.makeTableRow(
               false,
-              [comida.nombre, comida.cant.toStringAsFixed(2)],
+              [comida.nombre, comida.cantidad.toStringAsFixed(2)],
               CalaColors.orange),
           TableContents.makeInfoRow(
-              'Calorias: ', comida.cals, CalaColors.orange),
+              'Calorias: ', comida.calorias, CalaColors.orange),
           TableContents.makeInfoRow(
-              'Proteinas: ', comida.prot, CalaColors.orange),
+              'Proteinas: ', comida.proteinas, CalaColors.orange),
           TableContents.makeInfoRow(
-              'Carbohidratos: ', comida.carb, CalaColors.orange),
-          TableContents.makeInfoRow('Grasas: ', comida.gras, CalaColors.orange),
+              'Carbohidratos: ', comida.carbohidratos, CalaColors.orange),
+          TableContents.makeInfoRow(
+              'Grasas: ', comida.grasas, CalaColors.orange),
           Padding(
             padding: EdgeInsets.only(top: 5),
             child: ElevatedButton(
