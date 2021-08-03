@@ -37,7 +37,11 @@ class _CalaState extends State<Cala> {
     _dbHelper = DBHelper();
 
     _dbHelper.createDB().then((value) {
-      _created = value;
+      if (mounted) {
+        setState(() {
+          _created = value;
+        });
+      }
     });
 
     _welcomePage = CalaWelcome();

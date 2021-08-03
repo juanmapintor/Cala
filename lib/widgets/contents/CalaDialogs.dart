@@ -1,3 +1,10 @@
+// Configs
+import 'package:cala/widgets/configs/CalaColors.dart';
+// Contents
+import 'package:cala/widgets/contents/CalaContents.dart';
+// Dependencies
+import 'package:flutter/material.dart';
+
 /*
 En esta clase se agruparan todos los mensajes que se puedan mostrar como pop-up 
 durante la ejecucion de la aplicacion.
@@ -8,10 +15,6 @@ En principio contendra dialogos para:
   - Exito
   - Error
  */
-
-import 'package:cala/widgets/configs/CalaColors.dart';
-import 'package:cala/widgets/contents/CalaContents.dart';
-import 'package:flutter/material.dart';
 
 class CalaDialogs {
   static void showInfoDiag(
