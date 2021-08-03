@@ -300,6 +300,7 @@ class DBHelper {
     INSERT INTO ObjetivoDiario(id) VALUES (?)
     ''', [uniNutriID]);
 
+    _controller.add('updMain');
     _controller.add('updObj');
 
     return objID != 0;

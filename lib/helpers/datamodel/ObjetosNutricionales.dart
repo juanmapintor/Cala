@@ -1,9 +1,9 @@
 class UnidadNutricional {
   var id = -1;
-  final double calorias;
-  final double carbohidratos;
-  final double proteinas;
-  final double grasas;
+  late double calorias;
+  late double carbohidratos;
+  late double proteinas;
+  late double grasas;
 
   UnidadNutricional({
     required this.calorias,
@@ -43,7 +43,7 @@ class ObjetivoDiario extends UnidadNutricional {
 }
 
 class UnidadNutricionalCuantificada extends UnidadNutricional {
-  final double cantidad;
+  late double cantidad;
 
   UnidadNutricionalCuantificada({
     required this.cantidad,
@@ -82,7 +82,7 @@ class UnidadNutricionalCuantificada extends UnidadNutricional {
 }
 
 class Comida extends UnidadNutricionalCuantificada {
-  final String nombre;
+  late String nombre;
 
   Comida({
     required this.nombre,
@@ -124,15 +124,15 @@ class Comida extends UnidadNutricionalCuantificada {
 }
 
 class Ingesta {
-  final int id;
-  final String nombre;
-  final double cantidadIngesta;
-  final String fecha;
-  final String hora;
-  final double calorias;
-  final double carbohidratos;
-  final double proteinas;
-  final double grasas;
+  late int id;
+  late String nombre;
+  late double cantidadIngesta;
+  late String fecha;
+  late String hora;
+  late double calorias;
+  late double carbohidratos;
+  late double proteinas;
+  late double grasas;
 
   Ingesta(
       {required this.id,
@@ -155,8 +155,8 @@ class Ingesta {
 
 class UnidadPesaje {
   var id = -1;
-  final double peso;
-  final double porcGrasa;
+  late double peso;
+  late double porcGrasa;
 
   UnidadPesaje({
     required this.peso,
@@ -178,7 +178,7 @@ class UnidadPesaje {
 }
 
 class ObjetivoGeneral extends UnidadPesaje {
-  final double imc;
+  late double imc;
   ObjetivoGeneral({
     required double peso,
     required this.imc,
@@ -190,7 +190,7 @@ class ObjetivoGeneral extends UnidadPesaje {
 }
 
 class Pesaje extends UnidadPesaje {
-  final String fecha;
+  late String fecha;
 
   Pesaje({
     required this.fecha,

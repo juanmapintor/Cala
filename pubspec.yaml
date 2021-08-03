@@ -31,14 +31,25 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
+
+  # Barra de progreso vertical
   flutter_animation_progress_bar: ^2.0.0
-  pie_chart: ^5.0.0
-  intl: ^0.17.0
+  # Slider
   carousel_slider: ^4.0.0
+  # Multiples FloatingActionButton
   flutter_speed_dial: ^4.1.0
+  # Charts
   fl_chart: ^0.36.3
+
+  # Manejo de fecha/hora
+  intl: ^0.17.0
+
+  # Base de datos local y path local
   sqflite: ^2.0.0+3
   path: ^1.8.0
+
+  # Fuentes de Google
+  google_fonts: ^2.1.0
 
   
  

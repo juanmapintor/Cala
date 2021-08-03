@@ -8,8 +8,12 @@ class CalaColors {
 
   static const textDarker = Color(0xFF000000);
   static const textDark = Color(0xFF000000);
+
   static const textLighter = Color(0xFFFFFFFF);
   static const textLight = Color(0xFFFFFFFF);
+
+  static const mainText = textDarker;
+  static const accentText = textDark;
 
   static const MaterialColor teal =
       MaterialColor(_tealPrimaryValue, <int, Color>{

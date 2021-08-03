@@ -1,11 +1,11 @@
-import 'package:cala/widgets/CalaWait.dart';
+import 'package:cala/widgets/CalaAgregar.dart';
+import 'package:cala/widgets/CalaWelcome.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cala/helpers/DBHelper.dart';
 
 import 'package:cala/widgets/CalaMainPage.dart';
 import 'package:cala/widgets/CalaHistorial.dart';
-import 'package:cala/widgets/CalaAgregar.dart';
 import 'package:cala/widgets/CalaCatalogo.dart';
 import 'package:cala/widgets/CalaObjetivos.dart';
 import 'package:cala/widgets/CalaProgreso.dart';
@@ -20,40 +20,35 @@ class Cala extends StatefulWidget {
 }
 
 class _CalaState extends State<Cala> {
-  late DBHelper dbHelper;
+  late DBHelper _dbHelper;
 
-  late CalaMainPage mainPage;
-  late CalaHistorial historialPage;
-  late CalaCatalogo catalogoPage;
-  late CalaProgreso progresoPage;
-  late CalaObjetivos objetivosPage;
+  late CalaWelcome _welcomePage;
+  late CalaMainPage _mainPage;
+  late CalaHistorial _historialPage;
+  late CalaCatalogo _catalogoPage;
+  late CalaProgreso _progresoPage;
+  late CalaObjetivos _objetivosPage;
+  late CalaAgregar _agregar;
+  late CalaAgregar _agregar2;
 
-  late CalaAgregar agregarComida;
-  late CalaAgregar agregarIngesta;
-
-  late CalaWait espera;
-
-  var _ready = false;
+  var _created = false;
 
   _CalaState() {
-    dbHelper = DBHelper();
+    _dbHelper = DBHelper();
 
-    dbHelper.createDB().then((value) {
-      setState(() {
-        _ready = value;
-      });
+    _dbHelper.createDB().then((value) {
+      _created = value;
     });
 
-    mainPage = CalaMainPage(dbHelper);
-    historialPage = CalaHistorial(dbHelper);
-    catalogoPage = CalaCatalogo(dbHelper);
-    progresoPage = CalaProgreso(dbHelper);
-    objetivosPage = CalaObjetivos(dbHelper);
+    _welcomePage = CalaWelcome();
+    _mainPage = CalaMainPage(_dbHelper);
+    _historialPage = CalaHistorial(_dbHelper);
+    _catalogoPage = CalaCatalogo(_dbHelper);
+    _progresoPage = CalaProgreso(_dbHelper);
+    _objetivosPage = CalaObjetivos(_dbHelper);
 
-    espera = CalaWait();
-
-    agregarComida = CalaAgregar(dbHelper, true);
-    agregarIngesta = CalaAgregar(dbHelper, false);
+    _agregar = CalaAgregar(_dbHelper, false);
+    _agregar2 = CalaAgregar(_dbHelper, true);
   }
   @override
   Widget build(BuildContext context) {
@@ -64,13 +59,13 @@ class _CalaState extends State<Cala> {
     return MaterialApp(
       title: 'Cala',
       routes: {
-        '/': (context) => _ready ? mainPage : espera,
-        '/historial': (context) => historialPage,
-        '/catalogo': (context) => catalogoPage,
-        '/progreso': (context) => progresoPage,
-        '/objetivos': (context) => objetivosPage,
-        '/agregarComida': (context) => agregarComida,
-        '/agregarIngesta': (context) => agregarIngesta,
+        '/': (context) => _created ? _mainPage : _welcomePage,
+        '/historial': (context) => _historialPage,
+        '/catalogo': (context) => _catalogoPage,
+        '/progreso': (context) => _progresoPage,
+        '/objetivos': (context) => _objetivosPage,
+        '/agregarIngesta': (context) => _agregar,
+        '/agregarComida': (context) => _agregar2,
       },
       localizationsDelegates: [GlobalMaterialLocalizations.delegate],
       supportedLocales: [
