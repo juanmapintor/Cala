@@ -1,6 +1,5 @@
 import 'package:cala/widgets/configs/CalaColors.dart';
 import 'package:cala/widgets/contents/CalaContents.dart';
-import 'package:cala/widgets/contents/CalaDialogs.dart';
 import 'package:flutter/material.dart';
 
 class CalaWelcome extends StatelessWidget {

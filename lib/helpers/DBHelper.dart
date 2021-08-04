@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:cala/helpers/datamodel/ObjetosNutricionales.dart';
 import 'package:csv/csv.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart';
@@ -150,7 +149,7 @@ class DBHelper {
     INSERT INTO UnidadNutricionalCuantificada(id, cantidad) VALUES (?, ?);
     ''', [uniNutriID, comida.cantidad]);
 
-      final int comidaID = await db.rawInsert('''
+      await db.rawInsert('''
     INSERT INTO Comida(id, nombre) VALUES (?, ?)
     ''', [uniNutriCuantID, comida.nombre]);
     });

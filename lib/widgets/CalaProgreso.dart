@@ -11,7 +11,6 @@ import 'package:cala/widgets/contents/CalaDialogs.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class CalaProgreso extends StatefulWidget {
   final DBHelper _dbHelper;
