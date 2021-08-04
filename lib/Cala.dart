@@ -1,4 +1,3 @@
-import 'package:cala/widgets/CalaAgregar.dart';
 import 'package:cala/widgets/CalaWelcome.dart';
 import 'package:flutter/material.dart';
 
@@ -28,8 +27,6 @@ class _CalaState extends State<Cala> {
   late CalaCatalogo _catalogoPage;
   late CalaProgreso _progresoPage;
   late CalaObjetivos _objetivosPage;
-  late CalaAgregar _agregar;
-  late CalaAgregar _agregar2;
 
   var _created = false;
 
@@ -50,9 +47,6 @@ class _CalaState extends State<Cala> {
     _catalogoPage = CalaCatalogo(_dbHelper);
     _progresoPage = CalaProgreso(_dbHelper);
     _objetivosPage = CalaObjetivos(_dbHelper);
-
-    _agregar = CalaAgregar(_dbHelper, false);
-    _agregar2 = CalaAgregar(_dbHelper, true);
   }
   @override
   Widget build(BuildContext context) {
@@ -68,8 +62,6 @@ class _CalaState extends State<Cala> {
         '/catalogo': (context) => _catalogoPage,
         '/progreso': (context) => _progresoPage,
         '/objetivos': (context) => _objetivosPage,
-        '/agregarIngesta': (context) => _agregar,
-        '/agregarComida': (context) => _agregar2,
       },
       localizationsDelegates: [GlobalMaterialLocalizations.delegate],
       supportedLocales: [
