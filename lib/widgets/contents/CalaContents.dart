@@ -1,6 +1,8 @@
 import 'package:cala/widgets/configs/CalaColors.dart';
 import 'package:cala/widgets/configs/CalaFonts.dart';
+import 'package:cala/widgets/configs/CalaIcons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class CalaContents {
   // Widgets comunes que tienen varios usos
@@ -112,4 +114,121 @@ class CalaContents {
             ? CalaFonts.pacificoFontLight.overline
             : CalaFonts.pacificoFontDark.overline,
       );
+
+// Items para Catalogo, Historial y Hoy (MainPage)
+  static Widget itemCuantificado(
+      {String horario: '',
+      required String nombre,
+      required String cantidad,
+      required String calorias,
+      required String carbohidratos,
+      required String proteinas,
+      required String grasas,
+      required void Function()? onPressedDelete}) {
+    return Slidable(
+      child: Container(
+        height: 100,
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+                color: CalaColors.grey[300]!,
+                width: 0.8,
+                style: BorderStyle.solid),
+          ),
+        ),
+        child: Center(
+          child: ListTile(
+            leading: Container(
+              height: 33,
+              width: 75,
+              decoration: BoxDecoration(
+                color: CalaColors.orange,
+                borderRadius: BorderRadius.all(
+                  Radius.circular(33),
+                ),
+              ),
+              child: Center(
+                child:
+                    CalaContents.overline(text: '$calorias kcal.', light: true),
+              ),
+            ),
+            title: CalaContents.subtitle1(text: nombre),
+            subtitle: horario.isNotEmpty
+                ? Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CalaContents.caption(text: 'Horario: $horario'),
+                      CalaContents.caption(text: 'Cantidad: $cantidad')
+                    ],
+                  )
+                : CalaContents.caption(text: 'Cantidad: $cantidad'),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CalaContents.overline(text: 'H.'),
+                    CalaContents.body2(text: '$carbohidratos'),
+                    CalaContents.caption(text: 'gr.')
+                  ],
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CalaContents.overline(text: 'P.'),
+                    CalaContents.body2(text: '$proteinas'),
+                    CalaContents.caption(text: 'gr.')
+                  ],
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CalaContents.overline(text: 'G.'),
+                    CalaContents.body2(text: '$grasas'),
+                    CalaContents.caption(text: 'gr.')
+                  ],
+                ),
+                SizedBox(
+                  width: 8,
+                ),
+                Icon(Icons.chevron_left_rounded)
+              ],
+            ),
+          ),
+        ),
+      ),
+      actionPane: SlidableDrawerActionPane(),
+      secondaryActions: [
+        Container(
+          color: CalaColors.red,
+          child: Center(
+            child: TextButton(
+              onPressed: onPressedDelete,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.delete,
+                    color: CalaColors.white,
+                  ),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  CalaContents.button(text: 'Eliminar', light: true),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 }

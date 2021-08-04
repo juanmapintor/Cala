@@ -1,9 +1,14 @@
 import 'dart:math';
 
 import 'package:cala/helpers/DBHelper.dart';
+import 'package:cala/helpers/FormatHelper.dart';
 import 'package:cala/helpers/datamodel/ObjetosNutricionales.dart';
 import 'package:cala/widgets/configs/CalaColors.dart';
+import 'package:cala/widgets/configs/CalaFonts.dart';
 import 'package:cala/widgets/configs/CalaIcons.dart';
+import 'package:cala/widgets/contents/CalaContents.dart';
+import 'package:cala/widgets/contents/CalaDialogs.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -34,10 +39,10 @@ class _CalaProgresoState extends State<CalaProgreso> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Progreso'),
+        title: CalaContents.headline5(text: 'Progreso', light: true),
         backgroundColor: CalaColors.mainTealColor,
       ),
-      body: _load ? _loading() : _mainList(),
+      body: _load ? CalaContents.waitingWidget() : _carousel(),
       floatingActionButton: _floatingActionButton(),
     );
   }
@@ -86,26 +91,12 @@ class _CalaProgresoState extends State<CalaProgreso> {
     });
   }
 
-  static Widget _loading() {
-    return new Align(
-      child: new Container(
-        width: 70.0,
-        height: 70.0,
-        child: new Padding(
-            padding: const EdgeInsets.all(5.0),
-            child: new Center(child: new CircularProgressIndicator())),
-      ),
-      alignment: FractionalOffset.center,
-    );
-  }
-
   static Widget _title(String text) {
     return Center(
       child: Padding(
         padding: EdgeInsets.all(5),
-        child: Text(
-          text,
-          style: TextStyle(fontSize: 23, fontWeight: FontWeight.w400),
+        child: CalaContents.headline5(
+          text: text,
         ),
       ),
     );
@@ -115,25 +106,71 @@ class _CalaProgresoState extends State<CalaProgreso> {
     return Container(
       height: 300,
       child: Center(
-        child: Text(
-          'Comience agregando un pesaje',
-          style: TextStyle(
-            color: CalaColors.grey[500],
-            fontSize: 17,
-            fontWeight: FontWeight.w300,
-          ),
+        child: CalaContents.body1(
+          text: 'Comience agregando un pesaje',
         ),
       ),
     );
   }
 
-  Widget _mainList() {
+  Widget _carousel() {
+    _carouselCard(Widget child) => Container(
+          decoration: BoxDecoration(
+            color: CalaColors.white,
+            borderRadius: BorderRadius.circular(30),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.7),
+                spreadRadius: 5,
+                blurRadius: 7,
+                offset: Offset(0, 3),
+              ),
+            ],
+          ),
+          margin: EdgeInsets.all(15),
+          padding: EdgeInsets.all(15),
+          child: child,
+        );
+    return Container(
+      color: CalaColors.grey[350],
+      child: CarouselSlider(
+        items: [
+          _carouselCard(_paginaPeso()),
+          _carouselCard(_paginaGrasa()),
+        ],
+        options: CarouselOptions(
+          height: 700000,
+          viewportFraction: 1,
+          initialPage: 0,
+          enableInfiniteScroll: true,
+          reverse: false,
+          //autoPlay: true,
+          autoPlayInterval: Duration(seconds: 5),
+          autoPlayAnimationDuration: Duration(milliseconds: 800),
+          scrollDirection: Axis.horizontal,
+        ),
+      ),
+    );
+  }
+
+  Widget _paginaPeso() {
     return Column(
       children: [
         _title('Peso'),
-        _data.isEmpty ? _infoVacio() : _getGraph(true),
+        Expanded(
+          child: _data.isEmpty ? _infoVacio() : _getGraph(true),
+        ),
+      ],
+    );
+  }
+
+  Widget _paginaGrasa() {
+    return Column(
+      children: [
         _title('% Grasa'),
-        _data.isEmpty ? _infoVacio() : _getGraph(false)
+        Expanded(
+          child: _data.isEmpty ? _infoVacio() : _getGraph(false),
+        ),
       ],
     );
   }
@@ -146,7 +183,9 @@ class _CalaProgresoState extends State<CalaProgreso> {
         LineChartData(
           minX: 0,
           maxX: _data.last['value'],
-          minY: peso ? _objetivo.peso - 5 : _objetivo.porcGrasa - 5,
+          minY: peso
+              ? (_objetivo.peso != 0 ? _objetivo.peso - 5 : 60)
+              : (_objetivo.porcGrasa != 0 ? _objetivo.porcGrasa - 5 : 10),
           maxY: _max(peso) + 5,
           titlesData: _titlesData(),
           gridData: _gridData(),
@@ -183,11 +222,7 @@ class _CalaProgresoState extends State<CalaProgreso> {
         rotateAngle: -60,
         reservedSize: 35,
         showTitles: true,
-        getTextStyles: (_) => TextStyle(
-          color: Color(0xff68737d),
-          fontWeight: FontWeight.w500,
-          fontSize: 14,
-        ),
+        getTextStyles: (_) => CalaFonts.pacificoFontDark.subtitle2!,
         getTitles: (value) {
           for (var title in _data) {
             if (value == title['value']) return title['title'];
@@ -199,11 +234,7 @@ class _CalaProgresoState extends State<CalaProgreso> {
       leftTitles: SideTitles(
         showTitles: true,
         reservedSize: 35,
-        getTextStyles: (_) => TextStyle(
-          color: Color(0xff68737d),
-          fontWeight: FontWeight.w400,
-          fontSize: 12,
-        ),
+        getTextStyles: (_) => CalaFonts.pacificoFontDark.caption!,
         getTitles: (value) {
           return (value % 5) == 0 ? value.toString() : '';
         },
@@ -217,7 +248,7 @@ class _CalaProgresoState extends State<CalaProgreso> {
       show: true,
       drawHorizontalLine: true,
       getDrawingHorizontalLine: (value) {
-        return (value % 5) == 0
+        return (value % 5.0) == 0.0
             ? FlLine(
                 color: CalaColors.grey[400],
                 strokeWidth: 1,
@@ -293,9 +324,8 @@ class _CalaProgresoState extends State<CalaProgreso> {
           Row(
             children: [
               Expanded(
-                child: Text(
-                  'Peso',
-                  style: TextStyle(fontWeight: FontWeight.w300),
+                child: CalaContents.subtitle2(
+                  text: 'Peso',
                 ),
               ),
               Expanded(
@@ -310,18 +340,16 @@ class _CalaProgresoState extends State<CalaProgreso> {
                   },
                 ),
               ),
-              Text(
-                'kg.',
-                style: TextStyle(fontWeight: FontWeight.w300),
+              CalaContents.caption(
+                text: 'kg.',
               ),
             ],
           ),
           Row(
             children: [
               Expanded(
-                child: Text(
-                  'Grasa corporal',
-                  style: TextStyle(fontWeight: FontWeight.w300),
+                child: CalaContents.subtitle2(
+                  text: 'Grasa corporal',
                 ),
               ),
               Expanded(
@@ -338,9 +366,8 @@ class _CalaProgresoState extends State<CalaProgreso> {
                   },
                 ),
               ),
-              Text(
-                '%',
-                style: TextStyle(fontWeight: FontWeight.w300),
+              CalaContents.caption(
+                text: '%',
               ),
             ],
           )
@@ -349,85 +376,38 @@ class _CalaProgresoState extends State<CalaProgreso> {
     );
     showDialog(
       context: context,
-      builder: (_) => new AlertDialog(
-        title: new Text("Nuevo pesaje."),
+      builder: (_) => AlertDialog(
+        title: CalaContents.headline5(text: "Nuevo pesaje."),
         content: form,
         actions: <Widget>[
           TextButton(
-            child: Text('OK'),
+            child: CalaContents.button(text: 'OK'),
             onPressed: () async {
               if (formKey.currentState!.validate()) {
                 var peso = double.parse(pesoCtl.text);
                 var gras = double.parse(grasCtl.text);
-                showWaiting('Agregando...');
+                CalaDialogs.showWaitingDiag(
+                    context: context, message: 'Agregando pesaje...');
                 var success = await _dbHelper.addPesaje(Pesaje(
-                    fecha: DateFormat('dd-MM-yyyy').format(DateTime.now()),
-                    peso: peso,
-                    porcGrasa: gras));
+                    fecha: FormatHelper.today(), peso: peso, porcGrasa: gras));
+                Navigator.pop(context);
                 if (success) {
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pop();
-                  showInfoDiag('Agregado correctamente!');
+                  Navigator.pop(context);
+                  await CalaDialogs.showSuccessDiag(context: context);
                 } else {
-                  Navigator.of(context).pop();
-                  showInfoDiag('No se pudo agregar.');
+                  Navigator.pop(context);
+                  CalaDialogs.showFailDiag(
+                      context: context,
+                      errorMessage: 'No se pudo agregar el pesaje.',
+                      onAccept: () {
+                        Navigator.pop(context);
+                      });
                 }
               }
             },
           ),
           TextButton(
-            child: Text('Cancelar'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          )
-        ],
-      ),
-    );
-  }
-
-  void showInfoDiag(String msg) {
-    showDialog(
-      context: context,
-      builder: (_) => new AlertDialog(
-        title: new Text('Info'),
-        content: Text(msg),
-        actions: <Widget>[
-          TextButton(
-            child: Text('OK'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          )
-        ],
-      ),
-    );
-  }
-
-  void showWaiting(String msg) {
-    showDialog(
-      context: context,
-      builder: (_) => new AlertDialog(
-        title: new Text('Espere...'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Align(
-              child: new Container(
-                width: 70.0,
-                height: 70.0,
-                child: new Padding(
-                    padding: const EdgeInsets.all(5.0),
-                    child: new Center(child: new CircularProgressIndicator())),
-              ),
-              alignment: FractionalOffset.center,
-            ),
-            Text(msg),
-          ],
-        ),
-        actions: <Widget>[
-          TextButton(
-            child: Text('Cancelar'),
+            child: CalaContents.button(text: 'Cancelar'),
             onPressed: () {
               Navigator.of(context).pop();
             },

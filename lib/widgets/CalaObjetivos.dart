@@ -1,6 +1,9 @@
 import 'package:cala/helpers/DBHelper.dart';
 import 'package:cala/helpers/datamodel/ObjetosNutricionales.dart';
 import 'package:cala/widgets/configs/CalaIcons.dart';
+import 'package:cala/widgets/contents/CalaContents.dart';
+import 'package:cala/widgets/contents/CalaDialogs.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cala/widgets/configs/CalaColors.dart';
@@ -28,48 +31,82 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
       if (msg == 'updObj' && mounted) update(false);
     });
   }
+
   @override
   Widget build(BuildContext context) {
-    ListView mainList = ListView(
-      padding: EdgeInsets.all(10),
-      children: [
-        SizedBox(
-          height: 10,
-        ),
-        Text(
-          'Objetivos diarios',
-          style: TextStyle(
-              color: CalaColors.textDark,
-              fontSize: 25,
-              fontWeight: FontWeight.w300),
-        ),
-        SizedBox(
-          height: 20,
-        ),
-        getDaily(),
-        SizedBox(
-          height: 20,
-        ),
-        Text(
-          'Objetivos generales',
-          style: TextStyle(
-              color: CalaColors.textDark,
-              fontSize: 25,
-              fontWeight: FontWeight.w300),
-        ),
-        SizedBox(
-          height: 20,
-        ),
-        getGeneral()
-      ],
-    );
     return Scaffold(
       appBar: AppBar(
-        title: Text('Objetivos'),
+        title: CalaContents.headline6(text: 'Objetivos', light: true),
         backgroundColor: CalaColors.teal,
       ),
-      body: mainList,
+      body: _carousel(),
       floatingActionButton: _getFAB(),
+    );
+  }
+
+  Widget _carousel() {
+    _carouselCard(Widget child) => Container(
+          decoration: BoxDecoration(
+            color: CalaColors.white,
+            borderRadius: BorderRadius.circular(30),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.7),
+                spreadRadius: 5,
+                blurRadius: 7,
+                offset: Offset(0, 3),
+              ),
+            ],
+          ),
+          margin: EdgeInsets.all(15),
+          padding: EdgeInsets.all(15),
+          child: child,
+        );
+    return Container(
+      color: CalaColors.grey[350],
+      child: CarouselSlider(
+        items: [
+          _carouselCard(_paginaGeneral()),
+          _carouselCard(_paginaDiarios()),
+        ],
+        options: CarouselOptions(
+          height: 700000,
+          viewportFraction: 1,
+          initialPage: 0,
+          enableInfiniteScroll: true,
+          reverse: false,
+          //autoPlay: true,
+          autoPlayInterval: Duration(seconds: 5),
+          autoPlayAnimationDuration: Duration(milliseconds: 800),
+          scrollDirection: Axis.horizontal,
+        ),
+      ),
+    );
+  }
+
+  Widget _paginaGeneral() {
+    return Column(
+      children: [
+        CalaContents.headline5(
+          text: 'Objetivos generales',
+        ),
+        Expanded(
+          child: getGeneral(),
+        ),
+      ],
+    );
+  }
+
+  Widget _paginaDiarios() {
+    return Column(
+      children: [
+        CalaContents.headline5(
+          text: 'Objetivos diarios',
+        ),
+        Expanded(
+          child: getDaily(),
+        ),
+      ],
     );
   }
 
@@ -105,17 +142,22 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
           child: Padding(
             padding: EdgeInsets.all(2),
             child: Container(
-              color: color[600],
+              margin: EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                color: color[600],
+                borderRadius: BorderRadius.circular(30),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.7),
+                    spreadRadius: 2,
+                    blurRadius: 4,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+              ),
               padding: EdgeInsets.symmetric(vertical: 9, horizontal: 0),
               child: Center(
-                child: Text(
-                  header,
-                  style: TextStyle(
-                    color: CalaColors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 17,
-                  ),
-                ),
+                child: CalaContents.subtitle2(text: header, light: true),
               ),
             ),
           ),
@@ -124,17 +166,23 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
           child: Padding(
             padding: EdgeInsets.all(2),
             child: Container(
-              color: color[200],
+              margin: EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                color: color[900],
+                borderRadius: BorderRadius.circular(30),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.7),
+                    spreadRadius: 2,
+                    blurRadius: 4,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+              ),
               padding: EdgeInsets.symmetric(vertical: 9, horizontal: 0),
               child: Center(
-                child: Text(
-                  data.toStringAsFixed(2),
-                  style: TextStyle(
-                    color: CalaColors.black,
-                    fontWeight: FontWeight.w300,
-                    fontSize: 17,
-                  ),
-                ),
+                child: CalaContents.body1(
+                    text: data.toStringAsFixed(2), light: true),
               ),
             ),
           ),
@@ -146,34 +194,22 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
   Widget getGeneral() {
     switch (_gottenGral) {
       case 0:
-        return new Align(
-          child: new Container(
-            width: 70.0,
-            height: 70.0,
-            child: new Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: new Center(child: new CircularProgressIndicator())),
-          ),
-          alignment: FractionalOffset.center,
-        );
+        return CalaContents.waitingWidget();
       case 1:
-        return Column(children: [
-          makeInfoRow('Peso: ', objetivosGral[0], CalaColors.orange),
-          makeInfoRow('IMC: ', objetivosGral[1], CalaColors.orange),
-          makeInfoRow(
-              'Grasa corporal (%): ', objetivosGral[2], CalaColors.orange),
-        ]);
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            makeInfoRow('Peso: ', objetivosGral[0], CalaColors.orange),
+            makeInfoRow('IMC: ', objetivosGral[1], CalaColors.orange),
+            makeInfoRow('% Grasa: ', objetivosGral[2], CalaColors.orange),
+          ],
+        );
       case 2:
         return Padding(
           padding: EdgeInsets.all(20),
           child: Center(
-            child: Text(
-              'Nada que mostrar...',
-              style: TextStyle(
-                color: CalaColors.grey[500],
-                fontSize: 17,
-                fontWeight: FontWeight.w300,
-              ),
+            child: CalaContents.body1(
+              text: 'Nada que mostrar...',
             ),
           ),
         );
@@ -185,34 +221,24 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
   Widget getDaily() {
     switch (_gottenDaily) {
       case 0:
-        return new Align(
-          child: new Container(
-            width: 70.0,
-            height: 70.0,
-            child: new Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: new Center(child: new CircularProgressIndicator())),
-          ),
-          alignment: FractionalOffset.center,
-        );
+        return CalaContents.waitingWidget();
       case 1:
-        return Column(children: [
-          makeInfoRow('Calorias: ', objetivosDaily[0], CalaColors.orange),
-          makeInfoRow('Carbohidratos: ', objetivosDaily[1], CalaColors.orange),
-          makeInfoRow('Proteinas: ', objetivosDaily[2], CalaColors.orange),
-          makeInfoRow('Grasas: ', objetivosDaily[3], CalaColors.orange),
-        ]);
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            makeInfoRow('Calorias: ', objetivosDaily[0], CalaColors.orange),
+            makeInfoRow(
+                'Carbohidratos: ', objetivosDaily[1], CalaColors.orange),
+            makeInfoRow('Proteinas: ', objetivosDaily[2], CalaColors.orange),
+            makeInfoRow('Grasas: ', objetivosDaily[3], CalaColors.orange),
+          ],
+        );
       case 2:
         return Padding(
           padding: EdgeInsets.all(20),
           child: Center(
-            child: Text(
-              'Nada que mostrar...',
-              style: TextStyle(
-                color: CalaColors.grey[500],
-                fontSize: 17,
-                fontWeight: FontWeight.w300,
-              ),
+            child: CalaContents.body1(
+              text: 'Nada que mostrar...',
             ),
           ),
         );
@@ -274,9 +300,8 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
           Row(
             children: [
               Expanded(
-                child: Text(
-                  'Calorias',
-                  style: TextStyle(fontWeight: FontWeight.w300),
+                child: CalaContents.subtitle2(
+                  text: 'Calorias',
                 ),
               ),
               Expanded(
@@ -291,18 +316,16 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
                   },
                 ),
               ),
-              Text(
-                'kcal',
-                style: TextStyle(fontWeight: FontWeight.w300),
+              CalaContents.caption(
+                text: 'kcal',
               ),
             ],
           ),
           Row(
             children: [
               Expanded(
-                child: Text(
-                  'Carbohidratos',
-                  style: TextStyle(fontWeight: FontWeight.w300),
+                child: CalaContents.subtitle2(
+                  text: 'Carbohidratos',
                 ),
               ),
               Expanded(
@@ -319,18 +342,16 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
                   },
                 ),
               ),
-              Text(
-                '%',
-                style: TextStyle(fontWeight: FontWeight.w300),
+              CalaContents.caption(
+                text: '%',
               ),
             ],
           ),
           Row(
             children: [
               Expanded(
-                child: Text(
-                  'Proteinas',
-                  style: TextStyle(fontWeight: FontWeight.w300),
+                child: CalaContents.subtitle2(
+                  text: 'Proteinas',
                 ),
               ),
               Expanded(
@@ -347,18 +368,16 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
                   },
                 ),
               ),
-              Text(
-                '%',
-                style: TextStyle(fontWeight: FontWeight.w300),
+              CalaContents.caption(
+                text: '%',
               ),
             ],
           ),
           Row(
             children: [
               Expanded(
-                child: Text(
-                  'Grasas',
-                  style: TextStyle(fontWeight: FontWeight.w300),
+                child: CalaContents.subtitle2(
+                  text: 'Grasas',
                 ),
               ),
               Expanded(
@@ -375,9 +394,8 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
                   },
                 ),
               ),
-              Text(
-                '%',
-                style: TextStyle(fontWeight: FontWeight.w300),
+              CalaContents.caption(
+                text: '%',
               ),
             ],
           ),
@@ -387,11 +405,11 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
     showDialog(
       context: context,
       builder: (_) => new AlertDialog(
-        title: new Text("Objetivo diario."),
+        title: CalaContents.headline5(text: "Objetivo diario."),
         content: form,
         actions: <Widget>[
           TextButton(
-            child: Text('OK'),
+            child: CalaContents.button(text: 'OK'),
             onPressed: () async {
               if (formKey.currentState!.validate()) {
                 var carbper = double.parse(carbCtl.text);
@@ -400,13 +418,17 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
                 var tot = carbper + protper + grasper;
 
                 if (tot < 100 || tot > 101) {
-                  showInfoDiag('Los porcentajes no igualan el 100%');
+                  CalaDialogs.showInfoDiag(
+                      context: context,
+                      message: 'Los porcentajes no igualan el 100%');
                 } else {
                   var cal = double.parse(calCtl.text);
                   var carb = (cal * (carbper / 100)) / 4;
                   var prot = (cal * (protper / 100)) / 4;
                   var gras = (cal * (grasper / 100)) / 9;
-                  showWaiting('Agregando...');
+                  CalaDialogs.showWaitingDiag(
+                      context: context, message: 'Agregando...');
+                  Navigator.of(context).pop();
                   var success = await _dbHelper.addObjetivoDiario(
                       ObjetivoDiario(
                           calorias: cal,
@@ -416,18 +438,21 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
 
                   if (success) {
                     Navigator.of(context).pop();
-                    Navigator.of(context).pop();
-                    showInfoDiag('Agregado correctamente!');
+                    await CalaDialogs.showSuccessDiag(context: context);
                   } else {
-                    Navigator.of(context).pop();
-                    showInfoDiag('No se pudo agregar.');
+                    CalaDialogs.showFailDiag(
+                        context: context,
+                        errorMessage: 'No se pudo agregar.',
+                        onAccept: () {
+                          Navigator.of(context).pop();
+                        });
                   }
                 }
               }
             },
           ),
           TextButton(
-            child: Text('Cancelar'),
+            child: CalaContents.button(text: 'Cancelar'),
             onPressed: () {
               Navigator.of(context).pop();
             },
@@ -450,9 +475,8 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
           Row(
             children: [
               Expanded(
-                child: Text(
-                  'Peso',
-                  style: TextStyle(fontWeight: FontWeight.w300),
+                child: CalaContents.subtitle2(
+                  text: 'Peso',
                 ),
               ),
               Expanded(
@@ -467,18 +491,16 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
                   },
                 ),
               ),
-              Text(
-                'kg.',
-                style: TextStyle(fontWeight: FontWeight.w300),
+              CalaContents.caption(
+                text: 'kg.',
               ),
             ],
           ),
           Row(
             children: [
               Expanded(
-                child: Text(
-                  'Altura',
-                  style: TextStyle(fontWeight: FontWeight.w300),
+                child: CalaContents.subtitle2(
+                  text: 'Altura',
                 ),
               ),
               Expanded(
@@ -493,18 +515,16 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
                   },
                 ),
               ),
-              Text(
-                'cm',
-                style: TextStyle(fontWeight: FontWeight.w300),
+              CalaContents.caption(
+                text: 'cm',
               ),
             ],
           ),
           Row(
             children: [
               Expanded(
-                child: Text(
-                  'Grasas',
-                  style: TextStyle(fontWeight: FontWeight.w300),
+                child: CalaContents.subtitle2(
+                  text: 'Grasas',
                 ),
               ),
               Expanded(
@@ -521,9 +541,8 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
                   },
                 ),
               ),
-              Text(
-                '%',
-                style: TextStyle(fontWeight: FontWeight.w300),
+              CalaContents.caption(
+                text: '%',
               ),
             ],
           ),
@@ -533,82 +552,36 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
     showDialog(
       context: context,
       builder: (_) => new AlertDialog(
-        title: new Text("Objetivo general."),
+        title: CalaContents.headline5(text: "Objetivo general."),
         content: form,
         actions: <Widget>[
           TextButton(
-            child: Text('OK'),
+            child: CalaContents.button(text: 'OK'),
             onPressed: () async {
               if (formKey.currentState!.validate()) {
                 var peso = double.parse(pesoCtl.text);
                 var alt = double.parse(altCtl.text);
                 var gras = double.parse(grasCtl.text);
-                showWaiting('Agregando...');
+                CalaDialogs.showWaitingDiag(
+                    context: context, message: 'Agregando...');
                 var success = await _dbHelper.addObjetivoGral(peso, alt, gras);
+                Navigator.of(context).pop();
                 if (success) {
                   Navigator.of(context).pop();
-                  Navigator.of(context).pop();
-                  showInfoDiag('Agregado correctamente!');
+                  await CalaDialogs.showSuccessDiag(context: context);
                 } else {
-                  Navigator.of(context).pop();
-                  showInfoDiag('No se pudo agregar.');
+                  CalaDialogs.showFailDiag(
+                      context: context,
+                      errorMessage: 'No se pudo agregar.',
+                      onAccept: () {
+                        Navigator.of(context).pop();
+                      });
                 }
               }
             },
           ),
           TextButton(
-            child: Text('Cancelar'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          )
-        ],
-      ),
-    );
-  }
-
-  void showInfoDiag(String msg) {
-    showDialog(
-      context: context,
-      builder: (_) => new AlertDialog(
-        title: new Text('Info'),
-        content: Text(msg),
-        actions: <Widget>[
-          TextButton(
-            child: Text('OK'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          )
-        ],
-      ),
-    );
-  }
-
-  void showWaiting(String msg) {
-    showDialog(
-      context: context,
-      builder: (_) => new AlertDialog(
-        title: new Text('Espere...'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Align(
-              child: new Container(
-                width: 70.0,
-                height: 70.0,
-                child: new Padding(
-                    padding: const EdgeInsets.all(5.0),
-                    child: new Center(child: new CircularProgressIndicator())),
-              ),
-              alignment: FractionalOffset.center,
-            ),
-            Text(msg),
-          ],
-        ),
-        actions: <Widget>[
-          TextButton(
-            child: Text('Cancelar'),
+            child: CalaContents.button(text: 'Cancelar'),
             onPressed: () {
               Navigator.of(context).pop();
             },

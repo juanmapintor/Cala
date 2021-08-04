@@ -35,6 +35,15 @@ class _CalaMainPageState extends State<CalaMainPage> {
   late UnidadNutricional _totalesActual;
   late UnidadNutricional _totalesPorcentuales;
 
+  var _loadState = 0;
+
+  var _selectedFecha = FormatHelper.today();
+
+  List<Ingesta> _listaIngestas = [];
+
+  UnidadNutricional _totales =
+      UnidadNutricional(calorias: 0, carbohidratos: 0, proteinas: 0, grasas: 0);
+
   var _loaded = false;
 
   _CalaMainPageState(this._dbHelper) {
@@ -371,6 +380,7 @@ class _CalaMainPageState extends State<CalaMainPage> {
         items: [
           _carouselCard(_paginaMacro()),
           _carouselCard(_paginaPorcentual()),
+          _carouselCard(_todayInfo())
         ],
         options: CarouselOptions(
           height: 700000,
@@ -437,6 +447,8 @@ class _CalaMainPageState extends State<CalaMainPage> {
 
     var _listaIngestas = await _dbHelper.getListaIngestas(FormatHelper.today());
 
+    await getLista(_selectedFecha);
+
     _totalesActual = UnidadNutricional(
         calorias: 0, carbohidratos: 0, proteinas: 0, grasas: 0);
 
@@ -460,6 +472,238 @@ class _CalaMainPageState extends State<CalaMainPage> {
     if (mounted) {
       setState(() {
         _loaded = true;
+      });
+    }
+  }
+
+  Widget _todayInfo() {
+    var _mainList = ListView(
+      children: _listaIngestas
+          .map((ingesta) => CalaContents.itemCuantificado(
+              horario: ingesta.hora,
+              nombre: ingesta.nombre,
+              cantidad: ingesta.cantidadIngesta.toStringAsFixed(0),
+              calorias: ingesta.calorias.toStringAsFixed(0),
+              carbohidratos: ingesta.carbohidratos.toStringAsFixed(0),
+              proteinas: ingesta.proteinas.toStringAsFixed(0),
+              grasas: ingesta.grasas.toStringAsFixed(0),
+              onPressedDelete: () {
+                _deleteIngesta(ingesta.id);
+              }))
+          .toList(),
+    );
+    Widget _statedWidget(int state) {
+      switch (state) {
+        case 0:
+          return Center(
+            child: CalaContents.body1(text: 'Nada que mostrar.'),
+          );
+        case 1:
+          return Center(child: CalaContents.waitingWidget());
+        case 2:
+        default:
+          return _mainList;
+      }
+    }
+
+    return Container(
+      child: Column(
+        children: [
+          CalaContents.headline4(text: 'Hoy'),
+          Padding(
+            padding: EdgeInsets.only(bottom: 10),
+            child: CalaContents.body2(
+                text: 'Todo lo que has cosumido durante el día de hoy.'),
+          ),
+          Expanded(
+            child: _statedWidget(_loadState),
+          ),
+          Container(
+              margin: EdgeInsets.only(bottom: 50),
+              padding: EdgeInsets.only(top: 10),
+              decoration: BoxDecoration(
+                color: CalaColors.orange[800],
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 3,
+                    blurRadius: 5,
+                    offset: Offset(4, 4),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            CalaContents.subtitle2(
+                                text: 'Calorias', light: true),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            CalaContents.body1(
+                              text: _totales.calorias.toStringAsFixed(2),
+                              light: true,
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            CalaContents.caption(
+                              text: 'kcal.',
+                              light: true,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            CalaContents.subtitle2(
+                              text: 'Hidratos',
+                              light: true,
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            CalaContents.body1(
+                              text: _totales.carbohidratos.toStringAsFixed(2),
+                              light: true,
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            CalaContents.caption(
+                              text: 'gr.',
+                              light: true,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            CalaContents.subtitle2(
+                              text: 'Proteinas',
+                              light: true,
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            CalaContents.body1(
+                              text: _totales.proteinas.toStringAsFixed(2),
+                              light: true,
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            CalaContents.caption(
+                              text: 'gr.',
+                              light: true,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            CalaContents.subtitle2(
+                              text: 'Grasas',
+                              light: true,
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            CalaContents.body1(
+                              text: _totales.grasas.toStringAsFixed(2),
+                              light: true,
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            CalaContents.caption(
+                              text: 'gr',
+                              light: true,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  Container(
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.all(15),
+                    margin: EdgeInsets.all(13),
+                    decoration: BoxDecoration(
+                      color: CalaColors.blueGrey[800],
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(50),
+                      ),
+                    ),
+                    child: CalaContents.subtitle1(
+                      text: _selectedFecha,
+                      light: true,
+                    ),
+                  ),
+                ],
+              ))
+        ],
+      ),
+    );
+  }
+
+  void _deleteIngesta(int id) async {
+    CalaDialogs.showWaitingDiag(
+        context: context, message: 'Eliminando ingesta');
+    var success = await _dbHelper.deleteIngesta(id);
+    Navigator.pop(context);
+    if (success) {
+      await CalaDialogs.showSuccessDiag(context: context);
+      getLista(_selectedFecha);
+    } else {
+      CalaDialogs.showFailDiag(
+          context: context,
+          errorMessage: 'No se pudo eliminar la ingesta',
+          onAccept: () {
+            Navigator.pop(context);
+          });
+    }
+  }
+
+  Future<void> getLista(String fechaSeleccionada) async {
+    if (mounted) {
+      setState(() {
+        _loadState = 1;
+      });
+    }
+
+    var _listaObtenida = await _dbHelper.getListaIngestas(_selectedFecha);
+    var _totalesObtenidos = UnidadNutricional(
+        calorias: 0, carbohidratos: 0, proteinas: 0, grasas: 0);
+
+    _listaObtenida.forEach((ingesta) {
+      _totalesObtenidos.calorias += ingesta.calorias;
+      _totalesObtenidos.carbohidratos += ingesta.carbohidratos;
+      _totalesObtenidos.proteinas += ingesta.proteinas;
+      _totalesObtenidos.grasas += ingesta.grasas;
+    });
+
+    if (mounted) {
+      setState(() {
+        if (_listaObtenida.isNotEmpty) {
+          _loadState = 2;
+          _listaIngestas = _listaObtenida;
+          _totales = _totalesObtenidos;
+        } else {
+          _loadState = 0;
+        }
       });
     }
   }

@@ -1,12 +1,11 @@
 import 'package:cala/helpers/DBHelper.dart';
+import 'package:cala/helpers/FormatHelper.dart';
 import 'package:cala/helpers/datamodel/ObjetosNutricionales.dart';
+import 'package:cala/widgets/contents/CalaContents.dart';
+import 'package:cala/widgets/contents/CalaDialogs.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cala/widgets/configs/CalaColors.dart';
-import 'package:intl/intl.dart';
-
-import 'configs/CalaIcons.dart';
-import 'contents/TableContents.dart';
 
 class CalaHistorial extends StatefulWidget {
   final DBHelper _dbHelper;
@@ -17,207 +16,285 @@ class CalaHistorial extends StatefulWidget {
 
 class _CalaHistorialState extends State<CalaHistorial> {
   final DBHelper _dbHelper;
-  var _gotten = false;
-  var _load = false;
 
-  var _totCals = 0.0;
-  var _totCarb = 0.0;
-  var _totProt = 0.0;
-  var _totGras = 0.0;
+  var _loadState = 0;
 
   var _selectedFecha = 'Seleccione una fecha...';
-  late List<Ingesta> _ingestas;
+
+  List<Ingesta> _listaIngestas = [];
+
+  UnidadNutricional _totales =
+      UnidadNutricional(calorias: 0, carbohidratos: 0, proteinas: 0, grasas: 0);
 
   _CalaHistorialState(this._dbHelper);
   @override
   Widget build(BuildContext context) {
-    Widget loadingIndicator = _load
-        ? new Container(
-            color: CalaColors.grey[200],
-            width: 70.0,
-            height: 70.0,
-            child: new Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: new Center(child: new CircularProgressIndicator())),
-          )
-        : new Container();
-
-    ListView lista = ListView(
-      children: [
-        new Align(
-          child: loadingIndicator,
-          alignment: FractionalOffset.center,
-        ),
-        _gotten
-            ? Column(
-                children: _ingestas
-                    .map((ingesta) => makeFoodShower(ingesta))
-                    .toList())
-            : Padding(
-                padding: EdgeInsets.all(20),
-                child: Center(
-                  child: Text(
-                    'Nada que mostrar...',
-                    style: TextStyle(
-                      color: CalaColors.grey[500],
-                      fontSize: 17,
-                      fontWeight: FontWeight.w300,
-                    ),
-                  ),
-                ),
-              ),
-      ],
-    );
-
     return Scaffold(
       appBar: AppBar(
-        title: Text('Historial'),
+        title:
+            CalaContents.headline5(text: 'Historial de comidas', light: true),
         backgroundColor: CalaColors.mainTealColor,
       ),
-      backgroundColor: CalaColors.grey[200],
-      body: Column(
-        children: [
-          Expanded(child: lista),
-          Container(
-              color: CalaColors.teal[400],
-              child: Column(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.all(10),
-                    child: Text(
-                      _load ? 'Obteniendo comidas' : 'Totales: $_selectedFecha',
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w400,
-                          color: CalaColors.white),
-                    ),
-                  ),
-                  _gotten
-                      ? Column(
-                          children: [
-                            TableContents.makeInfoRow(
-                                'Calorias', _totCals, CalaColors.teal),
-                            TableContents.makeInfoRow(
-                                'Carbohidratos', _totCarb, CalaColors.teal),
-                            TableContents.makeInfoRow(
-                                'Proteinas', _totProt, CalaColors.teal),
-                            TableContents.makeInfoRow(
-                                'Grasas', _totGras, CalaColors.teal),
-                          ],
-                        )
-                      : Padding(
-                          padding: EdgeInsets.all(20),
-                          child: Center(
-                            child: Text(
-                              'Nada que mostrar...',
-                              style: TextStyle(
-                                color: CalaColors.grey[300],
-                                fontSize: 17,
-                                fontWeight: FontWeight.w300,
-                              ),
-                            ),
-                          ),
-                        ),
-                ],
-              )),
-        ],
-      ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          await getIngestas(context);
+        child: Icon(Icons.calendar_today),
+        onPressed: () {
+          _seleccionarFecha();
         },
-        child: CalaIcons.histIcon,
-        backgroundColor: CalaColors.blueGrey,
       ),
+      body: _mainBody(),
     );
   }
 
-  Container makeFoodShower(Ingesta ingesta) {
+  Widget _mainBody() {
+    var _mainList = ListView(
+      children: _listaIngestas
+          .map((ingesta) => CalaContents.itemCuantificado(
+              horario: ingesta.hora,
+              nombre: ingesta.nombre,
+              cantidad: ingesta.cantidadIngesta.toStringAsFixed(0),
+              calorias: ingesta.calorias.toStringAsFixed(0),
+              carbohidratos: ingesta.carbohidratos.toStringAsFixed(0),
+              proteinas: ingesta.proteinas.toStringAsFixed(0),
+              grasas: ingesta.grasas.toStringAsFixed(0),
+              onPressedDelete: () {
+                _deleteIngesta(ingesta.id);
+              }))
+          .toList(),
+    );
+    Widget _statedWidget(int state) {
+      switch (state) {
+        case 0:
+          return Center(
+            child: CalaContents.body1(text: 'Nada que mostrar.'),
+          );
+        case 1:
+          return Center(child: CalaContents.waitingWidget());
+        case 2:
+        default:
+          return _mainList;
+      }
+    }
+
     return Container(
-      padding: EdgeInsets.only(left: 5, top: 5, right: 5),
       child: Column(
         children: [
-          TableContents.makeTableRow(
-              true, ['Horario', 'Nombre', 'Cantidad'], CalaColors.orange),
-          TableContents.makeTableRow(
-              false,
-              [
-                ingesta.hora,
-                ingesta.nombre,
-                ingesta.cantidadIngesta.toStringAsFixed(2)
-              ],
-              CalaColors.orange),
-          TableContents.makeInfoRow(
-              'Calorias: ', ingesta.calorias, CalaColors.orange),
-          TableContents.makeInfoRow(
-              'Proteinas: ', ingesta.proteinas, CalaColors.orange),
-          TableContents.makeInfoRow(
-              'Carbohidratos: ', ingesta.carbohidratos, CalaColors.orange),
-          TableContents.makeInfoRow(
-              'Grasas: ', ingesta.grasas, CalaColors.orange),
-          Padding(
-            padding: EdgeInsets.only(top: 5),
-            child: ElevatedButton(
-              onPressed: () async {
-                setState(() {
-                  _gotten = false;
-                  _load = true;
-                });
-                await _dbHelper.deleteIngesta(ingesta.id);
-                await update();
-              },
-              child: Icon(Icons.delete, color: CalaColors.white),
-              style: ElevatedButton.styleFrom(
-                shape: CircleBorder(),
-                padding: EdgeInsets.all(20),
-                primary: CalaColors.red,
-              ),
-            ),
+          Expanded(
+            child: _statedWidget(_loadState),
           ),
+          Container(
+              padding: EdgeInsets.only(top: 10),
+              decoration: BoxDecoration(
+                color: CalaColors.orange[800],
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 3,
+                    blurRadius: 5,
+                    offset: Offset(4, 4),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            CalaContents.subtitle2(
+                                text: 'Calorias', light: true),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            CalaContents.body1(
+                              text: _totales.calorias.toStringAsFixed(2),
+                              light: true,
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            CalaContents.caption(
+                              text: 'kcal.',
+                              light: true,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            CalaContents.subtitle2(
+                              text: 'Hidratos',
+                              light: true,
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            CalaContents.body1(
+                              text: _totales.carbohidratos.toStringAsFixed(2),
+                              light: true,
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            CalaContents.caption(
+                              text: 'gr.',
+                              light: true,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            CalaContents.subtitle2(
+                              text: 'Proteinas',
+                              light: true,
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            CalaContents.body1(
+                              text: _totales.proteinas.toStringAsFixed(2),
+                              light: true,
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            CalaContents.caption(
+                              text: 'gr.',
+                              light: true,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            CalaContents.subtitle2(
+                              text: 'Grasas',
+                              light: true,
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            CalaContents.body1(
+                              text: _totales.grasas.toStringAsFixed(2),
+                              light: true,
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            CalaContents.caption(
+                              text: 'gr',
+                              light: true,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  Container(
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.all(15),
+                    margin: EdgeInsets.all(13),
+                    decoration: BoxDecoration(
+                      color: CalaColors.blueGrey[800],
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(50),
+                      ),
+                    ),
+                    child: CalaContents.subtitle1(
+                      text: _selectedFecha,
+                      light: true,
+                    ),
+                  ),
+                ],
+              ))
         ],
       ),
     );
   }
 
-  Future<void> getIngestas(BuildContext context) async {
-    var pickedFecha = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime(DateTime.now().year - 1),
-        lastDate: DateTime.now());
-
-    final DateFormat formatter = DateFormat('dd-MM-yyyy');
-
-    setState(() {
-      _selectedFecha = formatter.format(pickedFecha!);
-    });
-
-    await update();
-  }
-
-  Future<void> update() async {
-    setState(() {
-      _gotten = false;
-      _load = true;
-    });
-    _ingestas = await _dbHelper.getListaIngestas(_selectedFecha);
-    updateTotals(_ingestas);
-
-    setState(() {
-      _load = false;
-      _gotten = _ingestas.isNotEmpty;
-    });
-  }
-
-  void updateTotals(List<Ingesta> ingestas) {
-    _totCals = _totCarb = _totProt = _totGras = 0.0;
-    for (var ingesta in ingestas) {
+  void getLista(String fechaSeleccionada) async {
+    if (mounted) {
       setState(() {
-        _totCals += ingesta.calorias;
-        _totCarb += ingesta.carbohidratos;
-        _totProt += ingesta.proteinas;
-        _totGras += ingesta.grasas;
+        _loadState = 1;
       });
+    }
+    CalaDialogs.showWaitingDiag(
+        context: context, message: 'Obteniendo ingestas');
+
+    var _listaObtenida = await _dbHelper.getListaIngestas(_selectedFecha);
+    var _totalesObtenidos = UnidadNutricional(
+        calorias: 0, carbohidratos: 0, proteinas: 0, grasas: 0);
+    _listaObtenida.forEach((ingesta) {
+      _totalesObtenidos.calorias += ingesta.calorias;
+      _totalesObtenidos.carbohidratos += ingesta.carbohidratos;
+      _totalesObtenidos.proteinas += ingesta.proteinas;
+      _totalesObtenidos.grasas += ingesta.grasas;
+    });
+
+    Navigator.pop(context);
+
+    if (mounted) {
+      setState(() {
+        if (_listaObtenida.isNotEmpty) {
+          _loadState = 2;
+          _listaIngestas = _listaObtenida;
+          _totales = _totalesObtenidos;
+        } else {
+          _loadState = 0;
+        }
+      });
+    }
+  }
+
+  void _seleccionarFecha() async {
+    var dateGotten = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(DateTime.now().year - 1),
+      lastDate: DateTime.now(),
+    );
+
+    if (mounted) {
+      if (dateGotten != null) {
+        setState(() {
+          _selectedFecha = FormatHelper.dateTime(dateGotten);
+        });
+        getLista(FormatHelper.dateTime(dateGotten));
+      } else {
+        setState(() {
+          _loadState = 0;
+        });
+      }
+    }
+  }
+
+  void _deleteIngesta(int id) async {
+    CalaDialogs.showWaitingDiag(
+        context: context, message: 'Eliminando ingesta');
+    var success = await _dbHelper.deleteIngesta(id);
+    Navigator.pop(context);
+    if (success) {
+      await CalaDialogs.showSuccessDiag(context: context);
+      getLista(_selectedFecha);
+    } else {
+      CalaDialogs.showFailDiag(
+          context: context,
+          errorMessage: 'No se pudo eliminar la ingesta',
+          onAccept: () {
+            Navigator.pop(context);
+          });
     }
   }
 }

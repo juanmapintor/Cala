@@ -1,79 +1,49 @@
 import 'package:cala/helpers/DBHelper.dart';
 import 'package:cala/helpers/datamodel/ObjetosNutricionales.dart';
+import 'package:cala/widgets/configs/CalaFonts.dart';
+import 'package:cala/widgets/contents/CalaAgregar.dart';
+import 'package:cala/widgets/contents/CalaContents.dart';
+import 'package:cala/widgets/contents/CalaDialogs.dart';
 import 'package:flutter/material.dart';
 
-import 'package:cala/widgets/configs/CalaColors.dart';
-
+import 'configs/CalaColors.dart';
 import 'configs/CalaIcons.dart';
-import 'contents/TableContents.dart';
 
 class CalaCatalogo extends StatefulWidget {
   final DBHelper _dbHelper;
+
   CalaCatalogo(this._dbHelper);
+
   @override
   _CalaCatalogoState createState() => _CalaCatalogoState(_dbHelper);
 }
 
 class _CalaCatalogoState extends State<CalaCatalogo> {
-  late DBHelper _dbHelper;
-  var _load = true;
-  var _gotten = false;
-  late List<Comida> _ingestas;
+  final DBHelper _dbHelper;
+
+  var _loaded = false;
+
+  List<Comida> _listaComidas = [];
+
+  var _searchedTerm = '';
 
   _CalaCatalogoState(this._dbHelper) {
-    update(true);
-    _dbHelper.broadcastStream.listen((msg) {
-      if (msg == 'updCat' && mounted) update(false);
+    _update();
+    _dbHelper.broadcastStream.listen((event) {
+      if (event == 'updCat') _update();
     });
   }
   @override
   Widget build(BuildContext context) {
-    Widget loadingIndicator = _load
-        ? new Container(
-            width: 70.0,
-            height: 70.0,
-            child: new Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: new Center(child: new CircularProgressIndicator())),
-          )
-        : new Container();
-
-    ListView mainList = ListView(
-      children: [
-        new Align(
-          child: loadingIndicator,
-          alignment: FractionalOffset.center,
-        ),
-        _gotten
-            ? Column(
-                children: _ingestas
-                    .map((ingesta) => makeFoodShower(ingesta))
-                    .toList())
-            : Padding(
-                padding: EdgeInsets.all(20),
-                child: Center(
-                  child: Text(
-                    'Nada que mostrar...',
-                    style: TextStyle(
-                      color: CalaColors.grey[500],
-                      fontSize: 17,
-                      fontWeight: FontWeight.w300,
-                    ),
-                  ),
-                ),
-              ),
-      ],
-    );
-
     return Scaffold(
       appBar: AppBar(
-        title: Text('Catalogo'),
+        title: CalaContents.headline5(text: 'Catalogo', light: true),
         backgroundColor: CalaColors.mainTealColor,
       ),
-      body: mainList,
+      body: _mainBody(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.pushNamed(context, '/agregarComida');
+          CalaAgregar.showAddComida(dbHelper: _dbHelper, context: context);
         },
         child: CalaIcons.addIcon,
         backgroundColor: CalaColors.green,
@@ -81,63 +51,100 @@ class _CalaCatalogoState extends State<CalaCatalogo> {
     );
   }
 
-  void update(bool constructor) {
-    if (!constructor) {
-      setState(() {
-        _gotten = false;
-        _load = true;
-      });
-    }
-
-    _dbHelper.getListaComidas().then((value) {
-      _ingestas = value;
-      setState(() {
-        _load = false;
-        _gotten = _ingestas.isNotEmpty;
-      });
-    });
-  }
-
-  Container makeFoodShower(Comida comida) {
+  Widget _mainBody() {
+    var _lista = _listaComidas.isNotEmpty
+        ? _getComidasColumn(_searchedTerm)
+        : Center(
+            child: CalaContents.subtitle1(text: 'Nada que mostrar...'),
+          );
+    var _infoShow = _loaded ? _lista : CalaContents.waitingWidget();
+    var _searchBar = Container(
+      padding: EdgeInsets.all(10),
+      child: TextField(
+        decoration: InputDecoration(
+            hintText: "Buscar",
+            hintStyle: CalaFonts.pacificoFontDark.bodyText2,
+            border: OutlineInputBorder(),
+            icon: Icon(Icons.search)),
+        onChanged: (value) {
+          setState(() {
+            _searchedTerm = value;
+          });
+        },
+      ),
+    );
     return Container(
-      padding: EdgeInsets.only(left: 5, top: 5, right: 5),
       child: Column(
         children: [
-          TableContents.makeTableRow(
-              true, ['Nombre', 'Cantidad'], CalaColors.orange),
-          TableContents.makeTableRow(
-              false,
-              [comida.nombre, comida.cantidad.toStringAsFixed(2)],
-              CalaColors.orange),
-          TableContents.makeInfoRow(
-              'Calorias: ', comida.calorias, CalaColors.orange),
-          TableContents.makeInfoRow(
-              'Proteinas: ', comida.proteinas, CalaColors.orange),
-          TableContents.makeInfoRow(
-              'Carbohidratos: ', comida.carbohidratos, CalaColors.orange),
-          TableContents.makeInfoRow(
-              'Grasas: ', comida.grasas, CalaColors.orange),
-          Padding(
-            padding: EdgeInsets.only(top: 5),
-            child: ElevatedButton(
-              onPressed: () async {
-                setState(() {
-                  _gotten = false;
-                  _load = true;
-                });
-                await _dbHelper.deleteComida(comida.id);
-                update(false);
-              },
-              child: Icon(Icons.delete, color: CalaColors.white),
-              style: ElevatedButton.styleFrom(
-                shape: CircleBorder(),
-                padding: EdgeInsets.all(20),
-                primary: CalaColors.red,
-              ),
-            ),
+          _searchBar,
+          Expanded(
+            child: _infoShow,
           ),
+          SizedBox(
+            height: 80,
+          )
         ],
       ),
+    );
+  }
+
+  void _update() async {
+    if (mounted) {
+      setState(() {
+        _loaded = false;
+      });
+    }
+    _listaComidas = await _dbHelper.getListaComidas();
+
+    if (mounted) {
+      setState(() {
+        _loaded = true;
+      });
+    }
+  }
+
+  Widget _getComidasColumn(String searchedTerm) {
+    List<Comida> _listaGenerada = [];
+
+    if (searchedTerm.isNotEmpty) {
+      _listaComidas.forEach((comida) {
+        if (comida.nombre.toLowerCase().contains(searchedTerm.toLowerCase())) {
+          _listaGenerada.add(comida);
+        }
+      });
+    } else {
+      _listaGenerada = _listaComidas;
+    }
+    return ListView(
+      children: _listaGenerada
+          .map(
+            (comida) => CalaContents.itemCuantificado(
+              nombre: comida.nombre,
+              cantidad: comida.cantidad.toStringAsFixed(0),
+              calorias: comida.calorias.toStringAsFixed(0),
+              carbohidratos: comida.carbohidratos.toStringAsFixed(0),
+              proteinas: comida.proteinas.toStringAsFixed(0),
+              grasas: comida.grasas.toStringAsFixed(0),
+              onPressedDelete: () async {
+                CalaDialogs.showWaitingDiag(
+                    context: context, message: 'Eliminando comida');
+                var success = await _dbHelper.deleteComida(comida.id);
+                Navigator.pop(context);
+                if (success) {
+                  await CalaDialogs.showSuccessDiag(context: context);
+                } else {
+                  CalaDialogs.showFailDiag(
+                      context: context,
+                      errorMessage:
+                          'No se pudo eliminar la comida. Intentelo de nuevo más tarde.',
+                      onAccept: () {
+                        Navigator.pop(context);
+                      });
+                }
+              },
+            ),
+          )
+          .toList(),
     );
   }
 }
