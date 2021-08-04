@@ -1,6 +1,5 @@
 import 'package:cala/widgets/configs/CalaColors.dart';
 import 'package:cala/widgets/configs/CalaFonts.dart';
-import 'package:cala/widgets/configs/CalaIcons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
