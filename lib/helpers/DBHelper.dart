@@ -1,5 +1,8 @@
 import 'dart:async';
 import 'package:cala/helpers/datamodel/ObjetosNutricionales.dart';
+import 'package:csv/csv.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -116,6 +119,43 @@ class DBHelper {
       altura REAL
     );
     ''');
+
+    await db.execute('PRAGMA foreign_key = ON');
+
+    var _listaComidas = await _loadCSV();
+    _listaComidas.forEach((infoComida) async {
+      Comida comida = Comida(
+        nombre: infoComida[0].toString(),
+        cantidad:
+            double.parse(infoComida[1].toString().replaceAll(RegExp(','), '.')),
+        calorias:
+            double.parse(infoComida[2].toString().replaceAll(RegExp(','), '.')),
+        carbohidratos:
+            double.parse(infoComida[3].toString().replaceAll(RegExp(','), '.')),
+        proteinas:
+            double.parse(infoComida[4].toString().replaceAll(RegExp(','), '.')),
+        grasas:
+            double.parse(infoComida[5].toString().replaceAll(RegExp(','), '.')),
+      );
+      final int uniNutriID = await db.rawInsert('''
+    INSERT INTO UnidadNutricional(calorias, carbohidratos, proteinas, grasas) VALUES (?, ?, ?, ?);
+    ''', [
+        comida.calorias,
+        comida.carbohidratos,
+        comida.proteinas,
+        comida.grasas
+      ]);
+
+      final int uniNutriCuantID = await db.rawInsert('''
+    INSERT INTO UnidadNutricionalCuantificada(id, cantidad) VALUES (?, ?);
+    ''', [uniNutriID, comida.cantidad]);
+
+      final int comidaID = await db.rawInsert('''
+    INSERT INTO Comida(id, nombre) VALUES (?, ?)
+    ''', [uniNutriCuantID, comida.nombre]);
+
+      print('Agregada Comida ID: $comidaID');
+    });
   }
 
   Future<List<Comida>> getListaComidas() async {
@@ -178,7 +218,7 @@ class DBHelper {
     INSERT INTO Comida(id, nombre) VALUES (?, ?)
     ''', [uniNutriCuantID, comida.nombre]);
 
-    _updateCatalogo();
+    _updateAll();
 
     return comidaID != 0;
   }
@@ -189,9 +229,7 @@ class DBHelper {
     final int affRow =
         await db.delete('UnidadNutricional', where: 'id = ?', whereArgs: [id]);
 
-    _updateCatalogo();
-    _updateHistorial();
-    _updateMain();
+    _updateAll();
 
     return affRow != 0;
   }
@@ -249,9 +287,7 @@ class DBHelper {
 
     print('Ingesta id: $ingestID agregada');
 
-    _updateCatalogo();
-    _updateHistorial();
-    _updateMain();
+    _updateAll();
 
     return ingestID != 0;
   }
@@ -263,8 +299,7 @@ class DBHelper {
     final int affRow =
         await db.delete('Ingesta', where: 'idIngesta = ?', whereArgs: [id]);
 
-    _updateHistorial();
-    _updateMain();
+    _updateAll();
 
     return affRow != 0;
   }
@@ -309,7 +344,7 @@ class DBHelper {
     INSERT INTO ObjetivoDiario(id) VALUES (?)
     ''', [uniNutriID]);
 
-    _updateObjetivos();
+    _updateAll();
     return objID != 0;
   }
 
@@ -355,7 +390,7 @@ class DBHelper {
     INSERT INTO ObjetivoGeneral(id) VALUES (?);
     ''', [uniPesID]);
 
-    _updateObjetivos();
+    _updateAll();
 
     return objGralID != 0;
   }
@@ -371,7 +406,7 @@ class DBHelper {
     INSERT INTO Pesaje(id, fecha) VALUES (?, ?);
     ''', [uniPesID, pesaje.fecha]);
 
-    _updateProgreso();
+    _updateAll();
 
     return pesID != 0;
   }
@@ -395,12 +430,20 @@ class DBHelper {
         .toList();
   }
 
-  void _updateCatalogo() {
-    _controller.add('updCat');
+  static Future<List<List<dynamic>>> _loadCSV() async {
+    final _rawData = await rootBundle.loadString("lib/assets/datacomidas.csv");
+    return CsvToListConverter().convert(_rawData);
   }
 
-  void _updateHistorial() {
-    _controller.add('updObj');
+  void _updateAll() {
+    _updateCatalogo();
+    _updateMain();
+    _updateObjetivos();
+    _updateProgreso();
+  }
+
+  void _updateCatalogo() {
+    _controller.add('updCat');
   }
 
   void _updateMain() {
