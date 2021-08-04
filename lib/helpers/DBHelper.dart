@@ -178,7 +178,7 @@ class DBHelper {
     INSERT INTO Comida(id, nombre) VALUES (?, ?)
     ''', [uniNutriCuantID, comida.nombre]);
 
-    _controller.add('updCat');
+    _updateCatalogo();
 
     return comidaID != 0;
   }
@@ -188,6 +188,10 @@ class DBHelper {
 
     final int affRow =
         await db.delete('UnidadNutricional', where: 'id = ?', whereArgs: [id]);
+
+    _updateCatalogo();
+    _updateHistorial();
+    _updateMain();
 
     return affRow != 0;
   }
@@ -245,7 +249,9 @@ class DBHelper {
 
     print('Ingesta id: $ingestID agregada');
 
-    _controller.add('updMain');
+    _updateCatalogo();
+    _updateHistorial();
+    _updateMain();
 
     return ingestID != 0;
   }
@@ -256,6 +262,9 @@ class DBHelper {
 
     final int affRow =
         await db.delete('Ingesta', where: 'idIngesta = ?', whereArgs: [id]);
+
+    _updateHistorial();
+    _updateMain();
 
     return affRow != 0;
   }
@@ -300,9 +309,7 @@ class DBHelper {
     INSERT INTO ObjetivoDiario(id) VALUES (?)
     ''', [uniNutriID]);
 
-    _controller.add('updMain');
-    _controller.add('updObj');
-
+    _updateObjetivos();
     return objID != 0;
   }
 
@@ -348,7 +355,7 @@ class DBHelper {
     INSERT INTO ObjetivoGeneral(id) VALUES (?);
     ''', [uniPesID]);
 
-    _controller.add('updObj');
+    _updateObjetivos();
 
     return objGralID != 0;
   }
@@ -364,7 +371,7 @@ class DBHelper {
     INSERT INTO Pesaje(id, fecha) VALUES (?, ?);
     ''', [uniPesID, pesaje.fecha]);
 
-    _controller.add('updProg');
+    _updateProgreso();
 
     return pesID != 0;
   }
@@ -386,5 +393,25 @@ class DBHelper {
               porcGrasa: mapeo['porcGrasa'],
             ))
         .toList();
+  }
+
+  void _updateCatalogo() {
+    _controller.add('updCat');
+  }
+
+  void _updateHistorial() {
+    _controller.add('updObj');
+  }
+
+  void _updateMain() {
+    _controller.add('updMain');
+  }
+
+  void _updateObjetivos() {
+    _controller.add('updObj');
+  }
+
+  void _updateProgreso() {
+    _controller.add('updProg');
   }
 }
