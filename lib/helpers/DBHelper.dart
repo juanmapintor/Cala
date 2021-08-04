@@ -153,8 +153,6 @@ class DBHelper {
       final int comidaID = await db.rawInsert('''
     INSERT INTO Comida(id, nombre) VALUES (?, ?)
     ''', [uniNutriCuantID, comida.nombre]);
-
-      print('Agregada Comida ID: $comidaID');
     });
   }
 
@@ -285,15 +283,12 @@ class DBHelper {
       cantIngesta
     ]);
 
-    print('Ingesta id: $ingestID agregada');
-
     _updateAll();
 
     return ingestID != 0;
   }
 
   Future<bool> deleteIngesta(int id) async {
-    print('Borraremos ingesta id: $id');
     final db = await database;
 
     final int affRow =
