@@ -69,9 +69,9 @@ class CalaDialogs {
     );
   }
 
-  static void showSuccessDiag(
-      {required BuildContext context, int duration: 1000}) {
-    showDialog(
+  static Future<void> showSuccessDiag(
+      {required BuildContext context, int duration: 1000}) async {
+    await showDialog(
       context: context,
       builder: (_) {
         Future.delayed(Duration(milliseconds: duration), () {
