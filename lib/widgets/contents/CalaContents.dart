@@ -3,6 +3,7 @@ import 'package:cala/widgets/configs/CalaFonts.dart';
 import 'package:flutter/material.dart';
 
 class CalaContents {
+  // Widgets comunes que tienen varios usos
   static waitingWidget({bool light: false}) => Center(
         child: light
             ? CircularProgressIndicator(
@@ -24,6 +25,8 @@ class CalaContents {
           color: CalaColors.white,
         ),
       );
+
+  // Tipografia para titulos, cuerpo, etc.
   static body2({required String text, bool light: false}) => Text(
         text,
         textAlign: TextAlign.justify,

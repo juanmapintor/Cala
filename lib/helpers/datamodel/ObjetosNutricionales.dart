@@ -117,9 +117,12 @@ class Comida extends UnidadNutricionalCuantificada {
         );
   @override
   String toString() {
+    return nombre;
+    /*
     return id != -1
         ? 'Comida {id: $id, nombre: $nombre, cantidad: $cantidad, calorias: $calorias, carbohidratos: $carbohidratos, proteinas: $proteinas, grasas: $grasas}'
         : 'Comida {nombre: $nombre, cantidad: $cantidad, calorias: $calorias, carbohidratos: $carbohidratos, proteinas: $proteinas, grasas: $grasas}';
+    */
   }
 }
 

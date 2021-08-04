@@ -2,6 +2,7 @@
 import 'package:cala/helpers/DBHelper.dart';
 import 'package:cala/helpers/FormatHelper.dart';
 import 'package:cala/helpers/datamodel/ObjetosNutricionales.dart';
+import 'package:cala/widgets/contents/CalaAgregar.dart';
 
 // Contents
 import 'package:cala/widgets/contents/CalaContents.dart';
@@ -17,6 +18,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 class CalaMainPage extends StatefulWidget {
   final DBHelper _dbHelper;
@@ -51,13 +53,7 @@ class _CalaMainPageState extends State<CalaMainPage> {
       ),
       drawer: _calaDrawer(),
       body: _loaded ? _carousel() : CalaContents.waitingWidget(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, '/agregarIngesta');
-        },
-        child: CalaIcons.addIcon,
-        backgroundColor: CalaColors.green,
-      ),
+      floatingActionButton: _multipleAddFAB(),
     );
   }
 
@@ -143,6 +139,7 @@ class _CalaMainPageState extends State<CalaMainPage> {
                 child: Container(
                   width: 30,
                   child: FAProgressBar(
+                    animatedDuration: Duration(seconds: 2),
                     maxValue: maxValue,
                     currentValue: currentValue < 10
                         ? (maxValue * 0.1).toInt()
@@ -387,6 +384,45 @@ class _CalaMainPageState extends State<CalaMainPage> {
           scrollDirection: Axis.horizontal,
         ),
       ),
+    );
+  }
+
+  Widget _multipleAddFAB() {
+    return SpeedDial(
+      animatedIcon: AnimatedIcons.menu_close,
+      animatedIconTheme: IconThemeData(size: 22),
+      visible: true,
+      curve: Curves.bounceIn,
+      children: [
+        SpeedDialChild(
+          child: CalaIcons.addIconWhite,
+          backgroundColor: CalaColors.green,
+          onTap: () {
+            CalaAgregar.showAddIngesta(dbHelper: _dbHelper, context: context);
+          },
+          label: 'Agregar ingesta.',
+          labelStyle: TextStyle(
+            fontWeight: FontWeight.w500,
+            color: CalaColors.white,
+            fontSize: 16.0,
+          ),
+          labelBackgroundColor: CalaColors.green,
+        ),
+        SpeedDialChild(
+          child: CalaIcons.addIconWhite,
+          backgroundColor: CalaColors.orange,
+          onTap: () {
+            CalaAgregar.showAddComida(dbHelper: _dbHelper, context: context);
+          },
+          label: 'Agregar comida',
+          labelStyle: TextStyle(
+            fontWeight: FontWeight.w500,
+            color: CalaColors.white,
+            fontSize: 16.0,
+          ),
+          labelBackgroundColor: CalaColors.orange,
+        )
+      ],
     );
   }
 
