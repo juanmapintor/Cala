@@ -55,7 +55,7 @@ class _CalaCatalogoState extends State<CalaCatalogo> {
     var _lista = _listaComidas.isNotEmpty
         ? _getComidasColumn(_searchedTerm)
         : Center(
-            child: CalaContents.subtitle1(text: 'Nada que mostrar...'),
+            child: CalaContents.body1(text: 'Nada que mostrar...'),
           );
     var _infoShow = _loaded ? _lista : CalaContents.waitingWidget();
     var _searchBar = Container(
