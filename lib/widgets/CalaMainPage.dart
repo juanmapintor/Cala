@@ -522,7 +522,7 @@ class _CalaMainPageState extends State<CalaMainPage> {
           Padding(
             padding: EdgeInsets.only(bottom: 10),
             child: CalaContents.body2(
-                text: 'Todo lo que has cosumido durante el día de hoy.'),
+                text: 'Todo lo que has consumido durante el día de hoy.'),
           ),
           Expanded(
             child: _statedWidget(_loadState),
