@@ -85,9 +85,8 @@ class _CalaHistorialState extends State<CalaHistorial> {
               padding: EdgeInsets.only(top: 10),
               decoration: BoxDecoration(
                 color: CalaColors.orange[800],
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
+                borderRadius: BorderRadius.all(
+                  Radius.circular(30),
                 ),
                 boxShadow: [
                   BoxShadow(

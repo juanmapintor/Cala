@@ -322,7 +322,7 @@ class _CalaMainPageState extends State<CalaMainPage> {
 
     return Column(
       children: [
-        CalaContents.headline4(text: 'Macronutrientes'),
+        CalaContents.headline4(text: 'Porcentajes'),
         Padding(
           padding: EdgeInsets.only(top: 40),
           child: CalaContents.body2(
@@ -371,15 +371,24 @@ class _CalaMainPageState extends State<CalaMainPage> {
             ],
           ),
           margin: EdgeInsets.all(15),
-          padding: EdgeInsets.all(15),
           child: child,
         );
     return Container(
       color: CalaColors.grey[350],
       child: CarouselSlider(
         items: [
-          _carouselCard(_paginaMacro()),
-          _carouselCard(_paginaPorcentual()),
+          _carouselCard(
+            Padding(
+              child: _paginaMacro(),
+              padding: EdgeInsets.all(15),
+            ),
+          ),
+          _carouselCard(
+            Padding(
+              child: _paginaPorcentual(),
+              padding: EdgeInsets.all(15),
+            ),
+          ),
           _carouselCard(_todayInfo())
         ],
         options: CarouselOptions(
@@ -519,11 +528,10 @@ class _CalaMainPageState extends State<CalaMainPage> {
             child: _statedWidget(_loadState),
           ),
           Container(
-              margin: EdgeInsets.only(bottom: 50),
               padding: EdgeInsets.only(top: 10),
               decoration: BoxDecoration(
                 color: CalaColors.orange[800],
-                borderRadius: BorderRadius.all(Radius.circular(20)),
+                borderRadius: BorderRadius.all(Radius.circular(30)),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.grey.withOpacity(0.5),
@@ -639,12 +647,12 @@ class _CalaMainPageState extends State<CalaMainPage> {
                   ),
                   Container(
                     alignment: Alignment.center,
-                    padding: EdgeInsets.all(15),
-                    margin: EdgeInsets.all(13),
+                    padding: EdgeInsets.all(13),
+                    margin: EdgeInsets.only(top: 15),
                     decoration: BoxDecoration(
                       color: CalaColors.blueGrey[800],
                       borderRadius: BorderRadius.all(
-                        Radius.circular(50),
+                        Radius.circular(30),
                       ),
                     ),
                     child: CalaContents.subtitle1(

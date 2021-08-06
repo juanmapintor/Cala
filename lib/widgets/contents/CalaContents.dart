@@ -126,7 +126,6 @@ class CalaContents {
       required void Function()? onPressedDelete}) {
     return Slidable(
       child: Container(
-        height: 100,
         decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(
@@ -204,7 +203,7 @@ class CalaContents {
           ),
         ),
       ),
-      actionPane: SlidableDrawerActionPane(),
+      actionPane: SlidableScrollActionPane(),
       secondaryActions: [
         Container(
           color: CalaColors.red,

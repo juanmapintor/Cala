@@ -79,9 +79,6 @@ class _CalaCatalogoState extends State<CalaCatalogo> {
           _searchBar,
           Expanded(
             child: _infoShow,
-          ),
-          SizedBox(
-            height: 80,
           )
         ],
       ),
@@ -115,36 +112,42 @@ class _CalaCatalogoState extends State<CalaCatalogo> {
     } else {
       _listaGenerada = _listaComidas;
     }
+    var _listaWidgets = _listaGenerada
+        .map(
+          (comida) => CalaContents.itemCuantificado(
+            nombre: comida.nombre,
+            cantidad: comida.cantidad.toStringAsFixed(0),
+            calorias: comida.calorias.toStringAsFixed(0),
+            carbohidratos: comida.carbohidratos.toStringAsFixed(0),
+            proteinas: comida.proteinas.toStringAsFixed(0),
+            grasas: comida.grasas.toStringAsFixed(0),
+            onPressedDelete: () async {
+              CalaDialogs.showWaitingDiag(
+                  context: context, message: 'Eliminando comida');
+              var success = await _dbHelper.deleteComida(comida.id);
+              Navigator.pop(context);
+              if (success) {
+                await CalaDialogs.showSuccessDiag(context: context);
+              } else {
+                CalaDialogs.showFailDiag(
+                    context: context,
+                    errorMessage:
+                        'No se pudo eliminar la comida. Intentelo de nuevo más tarde.',
+                    onAccept: () {
+                      Navigator.pop(context);
+                    });
+              }
+            },
+          ),
+        )
+        .toList();
+    _listaWidgets.add(
+      SizedBox(
+        height: 80,
+      ),
+    );
     return ListView(
-      children: _listaGenerada
-          .map(
-            (comida) => CalaContents.itemCuantificado(
-              nombre: comida.nombre,
-              cantidad: comida.cantidad.toStringAsFixed(0),
-              calorias: comida.calorias.toStringAsFixed(0),
-              carbohidratos: comida.carbohidratos.toStringAsFixed(0),
-              proteinas: comida.proteinas.toStringAsFixed(0),
-              grasas: comida.grasas.toStringAsFixed(0),
-              onPressedDelete: () async {
-                CalaDialogs.showWaitingDiag(
-                    context: context, message: 'Eliminando comida');
-                var success = await _dbHelper.deleteComida(comida.id);
-                Navigator.pop(context);
-                if (success) {
-                  await CalaDialogs.showSuccessDiag(context: context);
-                } else {
-                  CalaDialogs.showFailDiag(
-                      context: context,
-                      errorMessage:
-                          'No se pudo eliminar la comida. Intentelo de nuevo más tarde.',
-                      onAccept: () {
-                        Navigator.pop(context);
-                      });
-                }
-              },
-            ),
-          )
-          .toList(),
+      children: _listaWidgets,
     );
   }
 }
