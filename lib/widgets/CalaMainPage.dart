@@ -320,14 +320,86 @@ class _CalaMainPageState extends State<CalaMainPage> {
           ],
         );
 
+    var tot = _objetivoDiario.carbohidratos +
+        _objetivoDiario.proteinas +
+        _objetivoDiario.grasas;
+
+    var carbper = (_objetivoDiario.carbohidratos / tot) * 100;
+    var protper = (_objetivoDiario.proteinas / tot) * 100;
+    var grasper = (_objetivoDiario.grasas / tot) * 100;
+
     return Column(
       children: [
         CalaContents.headline4(text: 'Porcentajes'),
         Padding(
-          padding: EdgeInsets.only(top: 40),
+          padding: EdgeInsets.all(20),
           child: CalaContents.body2(
               text:
                   'Desglose porcentual de los macronutrientes consumidos durante el dia.'),
+        ),
+        Container(
+          padding: EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            color: CalaColors.tealAccent,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CalaContents.subtitle1(text: 'Objetivo.'),
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        CalaContents.subtitle2(
+                          text: 'Hidratos',
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        CalaContents.body1(
+                          text: carbper.toStringAsFixed(2) + '%',
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        CalaContents.subtitle2(
+                          text: 'Proteinas',
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        CalaContents.body1(
+                          text: protper.toStringAsFixed(2) + '%',
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        CalaContents.subtitle2(
+                          text: 'Grasas',
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        CalaContents.body1(
+                          text: grasper.toStringAsFixed(2) + '%',
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
         ),
         _totalesActual.carbohidratos != 0
             ? Expanded(
@@ -335,13 +407,14 @@ class _CalaMainPageState extends State<CalaMainPage> {
                   alignment: Alignment.center,
                   children: [
                     Container(
+                        padding: EdgeInsets.all(10),
                         child: AspectRatio(
-                      aspectRatio: 1,
-                      child: _pieChart(),
-                    )),
+                          aspectRatio: 1,
+                          child: _pieChart(),
+                        )),
                     Container(
                       child: _indicator(),
-                    )
+                    ),
                   ],
                 ),
               )
@@ -384,10 +457,7 @@ class _CalaMainPageState extends State<CalaMainPage> {
             ),
           ),
           _carouselCard(
-            Padding(
-              child: _paginaPorcentual(),
-              padding: EdgeInsets.all(15),
-            ),
+            _paginaPorcentual(),
           ),
           _carouselCard(_todayInfo())
         ],
@@ -531,15 +601,9 @@ class _CalaMainPageState extends State<CalaMainPage> {
               padding: EdgeInsets.only(top: 10),
               decoration: BoxDecoration(
                 color: CalaColors.orange[800],
-                borderRadius: BorderRadius.all(Radius.circular(30)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    spreadRadius: 3,
-                    blurRadius: 5,
-                    offset: Offset(4, 4),
-                  ),
-                ],
+                borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(30),
+                    bottomRight: Radius.circular(30)),
               ),
               child: Column(
                 children: [
