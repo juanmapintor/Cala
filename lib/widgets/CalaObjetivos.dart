@@ -412,22 +412,27 @@ class _CalaObjetivosState extends State<CalaObjetivos> {
             child: CalaContents.button(text: 'OK'),
             onPressed: () async {
               if (formKey.currentState!.validate()) {
-                var carbper = double.parse(carbCtl.text);
-                var protper = double.parse(protCtl.text);
-                var grasper = double.parse(grasCtl.text);
+                var carbper = double.parse(carbCtl.text) / 100;
+                var protper = double.parse(protCtl.text) / 100;
+                var grasper = double.parse(grasCtl.text) / 100;
                 var tot = carbper + protper + grasper;
 
-                if (tot < 100 || tot > 101) {
+                if (tot < 1 || tot > 1.01) {
                   CalaDialogs.showInfoDiag(
                       context: context,
                       message: 'Los porcentajes no igualan el 100%');
                 } else {
                   var cal = double.parse(calCtl.text);
-                  var carb = (cal * (carbper / 100)) / 4;
-                  var prot = (cal * (protper / 100)) / 4;
-                  var gras = (cal * (grasper / 100)) / 9;
+
+                  var totGr = cal / (4 * carbper + 4 * protper + 9 * grasper);
+
+                  var carb = totGr * carbper;
+                  var prot = totGr * protper;
+                  var gras = totGr * grasper;
+
                   CalaDialogs.showWaitingDiag(
                       context: context, message: 'Agregando...');
+
                   Navigator.of(context).pop();
                   var success = await _dbHelper.addObjetivoDiario(
                       ObjetivoDiario(
