@@ -6,25 +6,25 @@ Tambíen permite llevar registro del progreso del peso y del porcentaje de grasa
 
 ## Screenshots
 <div style="display: inline;">
-  <img src="screenshots/screenshot-1.png?raw=true" width="33%">
-  <img src="screenshots/screenshot-2.png?raw=true" width="33%">
-  <img src="screenshots/screenshot-3.png?raw=true" width="33%">
+  <img src="screenshots/screenshot-1.png?raw=true" width="32%">
+  <img src="screenshots/screenshot-2.png?raw=true" width="32%">
+  <img src="screenshots/screenshot-3.png?raw=true" width="32%">
 </div>
 <div style="display: inline;">
-<img src="screenshots/screenshot-4.png?raw=true" width="33%">
-<img src="screenshots/screenshot-5.png?raw=true" width="33%">
-<img src="screenshots/screenshot-6.png?raw=true" width="33%">
+<img src="screenshots/screenshot-4.png?raw=true" width="32%">
+<img src="screenshots/screenshot-5.png?raw=true" width="32%">
+<img src="screenshots/screenshot-6.png?raw=true" width="32%">
   </div>
 
 <div style="display: inline;">
-<img src="screenshots/screenshot-7.png?raw=true" width="33%">
-<img src="screenshots/screenshot-8.png?raw=true" width="33%">
-<img src="screenshots/screenshot-9.png?raw=true" width="33%">
+<img src="screenshots/screenshot-7.png?raw=true" width="32%">
+<img src="screenshots/screenshot-8.png?raw=true" width="32%">
+<img src="screenshots/screenshot-9.png?raw=true" width="32%">
   </div>
 
 <div style="display: inline;">
-<img src="screenshots/screenshot-10.png?raw=true" width="40%">
-<img src="screenshots/screenshot-11.png?raw=true" width="40%">
+<img src="screenshots/screenshot-10.png?raw=true" width="45%">
+<img src="screenshots/screenshot-11.png?raw=true" width="45%">
 </div>
 
 
